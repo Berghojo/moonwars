@@ -55,8 +55,8 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
 * **Skill bar**: bottom center. The `1-5` / `6-0` slot on its left swaps the bar, and the five square
   slots are the skills. **F1 / F2 / F3** sit above it like GW2's profession bar.
 * **Dodge (V), jump (Space)**: big round buttons in the bottom right corner, under your right thumb.
-* **Interact (F), target (Tab), inventory (I)**: round buttons in the top right corner, with interact
-  in the corner.
+* **Interact (F), target (Tab), inventory (I), friend list (Z)**: round buttons in the top right
+  corner, with interact in the corner.
 * **Tray** along the top left: keyboard, sensitivity, hide-all (eye), Esc and Map.
   The small arrow tab at its left end folds the tray away to the edge and back. The app remembers
   whether it's folded.
@@ -94,7 +94,7 @@ Each on-screen button shows the key it currently sends, and the labels change wh
 | LT / RT | `V` dodge / `Space` jump | (same) |
 | D-pad ↑ → ↓ ← (on screen: F2, F3, interact, target buttons) | `F2` gunsaber, `F3`, `F` interact, `Tab` next target | (same) |
 | Start / Back | `Esc` / `M` map | (same) |
-| Inventory (on-screen) | `I` | (same) |
+| Inventory / friend list (on-screen) | `I` / `Z` | (same) |
 | Left stick | W A S D | (same) |
 | Touch | tap = left click, drag = camera, 2 fingers = zoom | (same) |
 

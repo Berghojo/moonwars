@@ -560,8 +560,8 @@ public class VirtualControllerConfigurationLoader {
      *   <li>Move stick bottom left</li>
      *   <li>Skill bar along the bottom center (bar swap + 5 slots), with F1-F3
      *       above it like GW2's profession bar</li>
-     *   <li>Dodge and jump in the bottom right corner; interact, target and
-     *       inventory in the top right corner</li>
+     *   <li>Dodge and jump in the bottom right corner; interact, target,
+     *       inventory and friend list in the top right corner</li>
      *   <li>Keyboard, sensitivity, hide-all, Esc and map in a tray along the top
      *       that folds away to the edge behind a small arrow tab</li>
      * </ul>
@@ -585,7 +585,7 @@ public class VirtualControllerConfigurationLoader {
         controller.addElement(createRightTrigger(1, "RT", -1, controller, context),
                 scale(right - 15, height), scale(39, height), scale(12, height), scale(12, height));
 
-        // Interact (corner), target and inventory along the top right
+        // Interact (corner), target, inventory and friend list along the top right
         controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_DPAD_DOWN,
                         ControllerPacket.DOWN_FLAG, 0, 1, "DOWN", -1, controller, context),
                 scale(right - 15, height), scale(2, height), scale(13, height), scale(13, height));
@@ -595,6 +595,9 @@ public class VirtualControllerConfigurationLoader {
         controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_INVENTORY,
                         KbmBindings.Input.OSC_INVENTORY.buttonFlag, 0, 1, "INV", -1, controller, context),
                 scale(right - 40, height), scale(3.5f, height), scale(10, height), scale(10, height));
+        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_FRIENDS,
+                        KbmBindings.Input.OSC_FRIENDS.buttonFlag, 0, 1, "FRIENDS", -1, controller, context),
+                scale(right - 51, height), scale(3.5f, height), scale(10, height), scale(10, height));
 
         // Skill bar: centered at the bottom, kept clear of the stick and action buttons
         float gap = 1, barWidth = 8, slot = 10;
