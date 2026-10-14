@@ -38,6 +38,7 @@ public final class KbmBindings {
         // are above the GameStream button range and never reach the host.
         OSC_BAR("On-screen BAR button", 0x01000000),
         OSC_EXTRA("On-screen extra button", 0x02000000),
+        OSC_INVENTORY("On-screen inventory button", 0x04000000),
         LS_UP("Left stick up", 0),
         LS_DOWN("Left stick down", 0),
         LS_LEFT("Left stick left", 0),
@@ -67,7 +68,7 @@ public final class KbmBindings {
     }
 
     // Button flags used only by the on-screen BAR and extra buttons
-    public static final int OSC_ONLY_FLAGS = 0x03000000;
+    public static final int OSC_ONLY_FLAGS = 0x07000000;
 
     public static final String PREF_PREFIX_BASE = "kbm_bind_base_";
     public static final String PREF_PREFIX_SHIFT = "kbm_bind_shift_";
@@ -130,6 +131,7 @@ public final class KbmBindings {
 
         b.setBase(Input.OSC_BAR, KbmAction.LAYER_TOGGLE);
         b.setBase(Input.OSC_EXTRA, KbmAction.key(KbmAction.VK_F1));
+        b.setBase(Input.OSC_INVENTORY, KbmAction.key('I'));
 
         return b;
     }
@@ -155,6 +157,7 @@ public final class KbmBindings {
         }
         b.setBase(Input.OSC_BAR, KbmAction.LAYER_TOGGLE);
         b.setBase(Input.OSC_EXTRA, KbmAction.key(KbmAction.VK_F1)); // Dragon Trigger
+        b.setBase(Input.OSC_INVENTORY, KbmAction.key('I'));
 
         b.setBase(Input.LT, KbmAction.key('V')); // dodge
         b.setBase(Input.RT, KbmAction.key(KbmAction.VK_SPACE)); // jump
@@ -168,7 +171,6 @@ public final class KbmBindings {
 
         b.setBase(Input.START, KbmAction.key(KbmAction.VK_ESCAPE));
         b.setBase(Input.BACK, KbmAction.key('M'));
-        b.setShifted(Input.BACK, KbmAction.key('I'));
         b.setBase(Input.GUIDE, KbmAction.TOGGLE_CAMERA_MODE);
 
         return b;

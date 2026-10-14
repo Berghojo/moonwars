@@ -560,7 +560,8 @@ public class VirtualControllerConfigurationLoader {
      *   <li>Move stick bottom left</li>
      *   <li>Skill bar along the bottom center (bar swap + 5 slots), with F1-F3
      *       above it like GW2's profession bar</li>
-     *   <li>Dodge, jump, interact and target around the bottom right corner</li>
+     *   <li>Dodge and jump in the bottom right corner; interact, target and
+     *       inventory in the top right corner</li>
      *   <li>Keyboard, sensitivity, hide-all, Esc and map in a tray along the top
      *       that folds away to the edge behind a small arrow tab</li>
      * </ul>
@@ -578,22 +579,27 @@ public class VirtualControllerConfigurationLoader {
                 scale(stickX, height), scale(stickY, height),
                 scale(stickSize, height), scale(stickSize, height));
 
-        // Action buttons around the bottom right corner
+        // Dodge and jump in the bottom right corner
         controller.addElement(createLeftTrigger(1, "LT", -1, controller, context),
                 scale(right - 18, height), scale(54, height), scale(16, height), scale(16, height));
         controller.addElement(createRightTrigger(1, "RT", -1, controller, context),
                 scale(right - 15, height), scale(39, height), scale(12, height), scale(12, height));
+
+        // Interact (corner), target and inventory along the top right
         controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_DPAD_DOWN,
                         ControllerPacket.DOWN_FLAG, 0, 1, "DOWN", -1, controller, context),
-                scale(right - 32, height), scale(57, height), scale(12, height), scale(12, height));
+                scale(right - 15, height), scale(2, height), scale(13, height), scale(13, height));
         controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_DPAD_LEFT,
                         ControllerPacket.LEFT_FLAG, 0, 1, "LEFT", -1, controller, context),
-                scale(right - 30, height), scale(43, height), scale(11, height), scale(11, height));
+                scale(right - 28, height), scale(3, height), scale(11, height), scale(11, height));
+        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_INVENTORY,
+                        KbmBindings.Input.OSC_INVENTORY.buttonFlag, 0, 1, "INV", -1, controller, context),
+                scale(right - 40, height), scale(3.5f, height), scale(10, height), scale(10, height));
 
         // Skill bar: centered at the bottom, kept clear of the stick and action buttons
         float gap = 1, barWidth = 8, slot = 10;
         float minX = stickX + stickSize + 2;
-        float maxX = right - 34;
+        float maxX = right - 20;
         float total = barWidth + gap + 5 * slot + 4 * gap;
         float x0 = Math.max(right / 2 - total / 2, minX);
         if (x0 + total > maxX) {
