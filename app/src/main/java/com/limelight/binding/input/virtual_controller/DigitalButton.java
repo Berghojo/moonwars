@@ -145,11 +145,9 @@ public class DigitalButton extends VirtualControllerElement {
         // set transparent background
         canvas.drawColor(Color.TRANSPARENT);
 
-        // Size text to fit both the width and height of the button
-        float textSize = Math.min(getPercent(getWidth(), 25), getPercent(getHeight(), 42));
-        if (text.length() > 3) {
-            textSize = Math.min(textSize, getWidth() * 1.1f / text.length());
-        }
+        // Size text to fit both the height and, by label length, the width of the button
+        float textSize = Math.min(getPercent(getHeight(), 42),
+                getWidth() * 1.1f / Math.max(2, text.length()));
         paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setStrokeWidth(getDefaultStrokeWidth());
