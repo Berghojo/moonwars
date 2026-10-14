@@ -37,8 +37,8 @@ Open **Settings → Gamepad to Keyboard & Mouse**:
 * **Camera sensitivity**: right stick speed while turning the camera.
 * **Cursor sensitivity**: right stick speed in cursor mode (after pressing Guide).
 * **Invert camera Y axis**, **Movement stick deadzone**.
-* **Touch mouse sensitivity** (under *Input Settings*): how fast the cursor moves when you drag a finger
-  on the screen in trackpad mode.
+* **Touch sensitivity** (under *Input Settings*): how fast the camera turns when you drag a finger
+  on the screen.
 
 The on-screen controller is enabled by default. Next to the gamepad buttons, it adds:
 
