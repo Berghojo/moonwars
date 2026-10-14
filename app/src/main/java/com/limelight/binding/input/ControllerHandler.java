@@ -249,6 +249,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             releaseControllerNumber(context);
             context.destroy();
             inputDeviceContexts.remove(deviceId);
+
+            // Release anything the removed controller was holding down
+            if (kbmController != null) {
+                sendKbmState();
+            }
         }
     }
 
@@ -1219,8 +1224,52 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         }
     }
 
+    // In keyboard/mouse mode, every controller (on-screen and physical) drives the
+    // same keyboard and mouse regardless of its player number
+    private void sendKbmState() {
+        int inputMap = 0;
+        byte leftTrigger = 0;
+        byte rightTrigger = 0;
+        short leftStickX = 0;
+        short leftStickY = 0;
+        short rightStickX = 0;
+        short rightStickY = 0;
+
+        GenericControllerContext[] contexts = new GenericControllerContext[inputDeviceContexts.size() + usbDeviceContexts.size() + 1];
+        int count = 0;
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            contexts[count++] = inputDeviceContexts.valueAt(i);
+        }
+        for (int i = 0; i < usbDeviceContexts.size(); i++) {
+            contexts[count++] = usbDeviceContexts.valueAt(i);
+        }
+        contexts[count++] = defaultContext;
+
+        for (int i = 0; i < count; i++) {
+            GenericControllerContext context = contexts[i];
+            if (context.assignedControllerNumber) {
+                inputMap |= context.inputMap;
+                // Triggers are unsigned 0-255 values stored in a byte
+                leftTrigger = (byte) Math.max(leftTrigger & 0xFF, context.leftTrigger & 0xFF);
+                rightTrigger = (byte) Math.max(rightTrigger & 0xFF, context.rightTrigger & 0xFF);
+                leftStickX = maxByMagnitude(leftStickX, context.leftStickX);
+                leftStickY = maxByMagnitude(leftStickY, context.leftStickY);
+                rightStickX = maxByMagnitude(rightStickX, context.rightStickX);
+                rightStickY = maxByMagnitude(rightStickY, context.rightStickY);
+            }
+        }
+
+        kbmController.onGamepadState(inputMap, leftStickX, leftStickY,
+                rightStickX, rightStickY, leftTrigger, rightTrigger);
+    }
+
     private void sendControllerInputPacket(GenericControllerContext originalContext) {
         assignControllerNumberIfNeeded(originalContext);
+
+        if (kbmController != null) {
+            sendKbmState();
+            return;
+        }
 
         // Take the context's controller number and fuse all inputs with the same number
         short controllerNumber = originalContext.controllerNumber;
@@ -1271,15 +1320,6 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             leftStickY |= maxByMagnitude(leftStickY, defaultContext.leftStickY);
             rightStickX |= maxByMagnitude(rightStickX, defaultContext.rightStickX);
             rightStickY |= maxByMagnitude(rightStickY, defaultContext.rightStickY);
-        }
-
-        if (kbmController != null) {
-            // Player 1 (which includes the on-screen controller) drives the keyboard and mouse
-            if (controllerNumber == 0) {
-                kbmController.onGamepadState(inputMap, leftStickX, leftStickY,
-                        rightStickX, rightStickY, leftTrigger, rightTrigger);
-            }
-            return;
         }
 
         if (originalContext.mouseEmulationActive) {
