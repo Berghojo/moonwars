@@ -134,11 +134,6 @@
             android:title="@string/title_checkbox_touch_camera_drag"
             android:summary="@string/summary_checkbox_touch_camera_drag"
             android:defaultValue="true" />
-        <CheckBoxPreference
-            android:key="checkbox_touchscreen_trackpad"
-            android:title="@string/title_checkbox_touchscreen_trackpad"
-            android:summary="@string/summary_checkbox_touchscreen_trackpad"
-            android:defaultValue="true" />
         <com.limelight.preferences.SeekBarPreference
             android:key="seekbar_touch_mouse_sensitivity"
             android:dialogMessage="@string/summary_touch_mouse_sensitivity"

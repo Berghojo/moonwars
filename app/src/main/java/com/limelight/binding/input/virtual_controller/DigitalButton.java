@@ -138,27 +138,45 @@ public class DigitalButton extends VirtualControllerElement {
         // set transparent background
         canvas.drawColor(Color.TRANSPARENT);
 
-        paint.setTextSize(getPercent(getWidth(), 25));
+        // Size text to fit both the width and height of the button
+        float textSize = Math.min(getPercent(getWidth(), 25), getPercent(getHeight(), 42));
+        if (text.length() > 4) {
+            textSize = Math.min(textSize, getWidth() * 1.4f / text.length());
+        }
+        paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setStrokeWidth(getDefaultStrokeWidth());
-
-        paint.setColor(isPressed() ? pressedColor : getDefaultColor());
-        paint.setStyle(Paint.Style.STROKE);
 
         rect.left = rect.top = paint.getStrokeWidth();
         rect.right = getWidth() - rect.left;
         rect.bottom = getHeight() - rect.top;
 
+        // Dark backdrop (tinted when pressed) for contrast against the video
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(isPressed() ? (pressedColor & 0x00FFFFFF) | 0x80000000 : backdropColor);
+        canvas.drawOval(rect, paint);
+
+        paint.setColor(isPressed() ? pressedColor : getDefaultColor());
+        paint.setStyle(Paint.Style.STROKE);
         canvas.drawOval(rect, paint);
 
         if (icon != -1) {
-            Drawable d = getResources().getDrawable(icon);
-            d.setBounds(5, 5, getWidth() - 5, getHeight() - 5);
+            Drawable d = getResources().getDrawable(icon).mutate();
+            d.setColorFilter(paint.getColor(), android.graphics.PorterDuff.Mode.SRC_IN);
+            // Keep the icon square and centered inside the oval
+            int size = (int) (Math.min(getWidth(), getHeight()) * 0.6f);
+            int left = (getWidth() - size) / 2;
+            int top = (getHeight() - size) / 2;
+            d.setBounds(left, top, left + size, top + size);
             d.draw(canvas);
         } else {
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            paint.setStrokeWidth(getDefaultStrokeWidth()/2);
-            canvas.drawText(text, getPercent(getWidth(), 50), getPercent(getHeight(), 63), paint);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setFakeBoldText(true);
+            paint.setShadowLayer(getDefaultStrokeWidth(), 0, 0, 0xFF000000);
+            canvas.drawText(text, getPercent(getWidth(), 50),
+                    getHeight() / 2f - (paint.descent() + paint.ascent()) / 2, paint);
+            paint.clearShadowLayer();
+            paint.setFakeBoldText(false);
         }
     }
 

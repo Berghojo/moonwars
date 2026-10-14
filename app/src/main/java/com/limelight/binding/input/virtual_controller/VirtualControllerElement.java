@@ -43,14 +43,18 @@ public abstract class VirtualControllerElement extends View {
     public static final int EID_KBM_BAR = 21;
     public static final int EID_KBM_EXTRA = 22;
     public static final int EID_SENSITIVITY = 23;
+    public static final int EID_VISIBILITY = 24;
 
     protected VirtualController virtualController;
     protected final int elementId;
 
     private final Paint paint = new Paint();
 
-    private int normalColor = 0xF0888888;
-    protected int pressedColor = 0xF00000FF;
+    // White outlines and a light blue press color stay visible over bright and dark games
+    private int normalColor = 0xF0FFFFFF;
+    protected int pressedColor = 0xF05AC8FA;
+    // Dark translucent fill behind each control for contrast against the video
+    protected int backdropColor = 0x73000000;
     private int configMoveColor = 0xF0FF0000;
     private int configResizeColor = 0xF0FF00FF;
     private int configSelectedColor = 0xF000FF00;
@@ -175,7 +179,7 @@ public abstract class VirtualControllerElement extends View {
 
     protected int getDefaultStrokeWidth() {
         DisplayMetrics screen = getResources().getDisplayMetrics();
-        return (int)(screen.heightPixels*0.004f);
+        return (int)(screen.heightPixels*0.006f);
     }
 
     protected void showConfigurationDialog() {
@@ -313,6 +317,7 @@ public abstract class VirtualControllerElement extends View {
 
     public void setOpacity(int opacity) {
         int hexOpacity = opacity * 255 / 100;
+        this.backdropColor = (hexOpacity * 45 / 100) << 24;
         this.normalColor = (hexOpacity << 24) | (normalColor & 0x00FFFFFF);
         this.pressedColor = (hexOpacity << 24) | (pressedColor & 0x00FFFFFF);
 

@@ -42,25 +42,29 @@ Open **Settings → Gamepad to Keyboard & Mouse**:
 
 The on-screen controller is enabled by default. Next to the gamepad buttons, it adds:
 
-* **LMB** / **RMB**: left and right mouse buttons. Hold them to drag.
-* **KEYBOARD**: opens Android's keyboard so you can type to the PC, e.g. in chat. Tap it again to close it.
-  A three-finger tap on the stream does the same.
-* **TOUCH**: switches how touching the stream (outside the buttons) works. Each tap goes to the next mode:
-  * *Camera* (default): touching holds the right mouse button, and dragging turns the camera, like
-    right-click dragging in GW2. A tap is a right click. This lets you turn the camera with your
-    finger instead of the right stick.
-  * *Trackpad*: dragging a finger moves the cursor, like a laptop touchpad. A tap clicks.
+Next to the gamepad buttons, it adds icon buttons. All controls have white outlines on a dark
+backdrop, so they stay readable over the game.
+
+* **Left / right mouse icons**: left and right mouse buttons. Hold them to drag.
+* **Keyboard icon**: opens Android's keyboard so you can type to the PC, e.g. in chat. Tap it again to
+  close it. A three-finger tap on the stream does the same.
+* **Hand icon (touch mode)**: switches what touching the stream (outside the buttons) does:
+  * *Camera* (default): dragging one finger holds the right mouse button and turns the camera, like
+    right-click dragging in GW2. A quick tap is a right click. **Dragging two fingers up or down zooms
+    in or out** (mouse wheel), like GeForce NOW.
   * *Direct click*: a tap clicks exactly where you touch. A long press right-clicks, and dragging
     holds the left button.
   The app remembers your choice for the next stream.
-* **SENS**: opens sensitivity settings without leaving the game: camera and cursor sensitivity,
-  movement deadzone, invert Y, and touch mouse sensitivity. Changes apply immediately and are saved.
+* **Sliders icon**: opens sensitivity settings without leaving the game: camera and cursor sensitivity,
+  movement deadzone, invert Y, and touch camera sensitivity. Changes apply immediately and are saved.
+* **Eye icon**: hides every other control, so you can click something underneath them. Tap it again to
+  bring them back.
 
 L3 and R3 (Tab and F by default) are a double-tap on the left or right stick.
  To move or resize buttons, use the gear icon in the top-left
 of the stream; this is the standard Moonlight on-screen controller editor. By default, dragging on the stream
-outside the controls turns the camera. Switch to trackpad or direct click with the **TOUCH** button
-to click UI, loot and dialogs.
+outside the controls turns the camera. Switch to direct click with the touch mode button to click
+UI, loot and dialogs.
 
 ## Presets
 

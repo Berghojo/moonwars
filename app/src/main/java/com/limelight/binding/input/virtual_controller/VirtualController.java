@@ -68,6 +68,11 @@ public class VirtualController {
     private final Map<DigitalButton, KbmBindings.Input> boundButtons = new HashMap<>();
     private final Map<DigitalButton, String> defaultLabels = new HashMap<>();
 
+    // The eye button stays visible while every other control is hidden, so
+    // controls can be cleared out of the way of something that needs clicking
+    private VirtualControllerElement visibilityToggle;
+    private boolean overlayHidden;
+
     public VirtualController(final ControllerHandler controllerHandler, FrameLayout layout, final Context context) {
         this.controllerHandler = controllerHandler;
         this.frame_layout = layout;
@@ -125,6 +130,32 @@ public class VirtualController {
         }
 
         buttonConfigure.setVisibility(View.VISIBLE);
+        applyOverlayVisibility();
+    }
+
+    void setVisibilityToggle(VirtualControllerElement element) {
+        visibilityToggle = element;
+    }
+
+    void toggleOverlayVisibility() {
+        overlayHidden = !overlayHidden;
+        applyOverlayVisibility();
+    }
+
+    private void applyOverlayVisibility() {
+        if (visibilityToggle == null) {
+            return;
+        }
+
+        int visibility = overlayHidden ? View.INVISIBLE : View.VISIBLE;
+        for (VirtualControllerElement element : elements) {
+            if (element != visibilityToggle) {
+                element.setVisibility(visibility);
+            }
+        }
+        buttonConfigure.setVisibility(visibility);
+        // Dim the eye button while everything else is hidden
+        visibilityToggle.setAlpha(overlayHidden ? 0.5f : 1f);
     }
 
     public void removeElements() {
@@ -134,6 +165,7 @@ public class VirtualController {
         elements.clear();
         boundButtons.clear();
         defaultLabels.clear();
+        visibilityToggle = null;
 
         frame_layout.removeView(buttonConfigure);
     }
@@ -179,6 +211,7 @@ public class VirtualController {
 
         // Apply user preferences onto the default layout
         VirtualControllerConfigurationLoader.loadFromPreferences(this, context);
+        applyOverlayVisibility();
 
         KbmController kbmController = getKbmController();
         if (kbmController != null) {

@@ -222,6 +222,11 @@ public class AnalogStick extends VirtualControllerElement {
         // set transparent background
         canvas.drawColor(Color.TRANSPARENT);
 
+        // Dark backdrop for contrast against the video
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(backdropColor);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius_complete, paint);
+
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(getDefaultStrokeWidth());
 

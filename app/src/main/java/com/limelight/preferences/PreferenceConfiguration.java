@@ -58,7 +58,6 @@ public class PreferenceConfiguration {
     private static final String VIBRATE_FALLBACK_PREF_STRING = "checkbox_vibrate_fallback";
     private static final String VIBRATE_FALLBACK_STRENGTH_PREF_STRING = "seekbar_vibrate_fallback_strength";
     private static final String FLIP_FACE_BUTTONS_PREF_STRING = "checkbox_flip_face_buttons";
-    public static final String TOUCHSCREEN_TRACKPAD_PREF_STRING = "checkbox_touchscreen_trackpad";
     public static final String TOUCH_CAMERA_DRAG_PREF_STRING = "checkbox_touch_camera_drag";
     public static final String TOUCH_MOUSE_SENSITIVITY_PREF_STRING = "seekbar_touch_mouse_sensitivity";
     private static final String LATENCY_TOAST_PREF_STRING = "checkbox_enable_post_stream_toast";
@@ -99,7 +98,6 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_VIBRATE_FALLBACK = false;
     private static final int DEFAULT_VIBRATE_FALLBACK_STRENGTH = 100;
     private static final boolean DEFAULT_FLIP_FACE_BUTTONS = false;
-    private static final boolean DEFAULT_TOUCHSCREEN_TRACKPAD = true;
     private static final int DEFAULT_TOUCH_MOUSE_SENSITIVITY = 100;
     private static final boolean DEFAULT_TOUCH_CAMERA_DRAG = true;
     private static final String DEFAULT_AUDIO_CONFIG = "2"; // Stereo
@@ -601,7 +599,8 @@ public class PreferenceConfiguration {
         config.vibrateFallbackToDevice = prefs.getBoolean(VIBRATE_FALLBACK_PREF_STRING, DEFAULT_VIBRATE_FALLBACK);
         config.vibrateFallbackToDeviceStrength = prefs.getInt(VIBRATE_FALLBACK_STRENGTH_PREF_STRING, DEFAULT_VIBRATE_FALLBACK_STRENGTH);
         config.flipFaceButtons = prefs.getBoolean(FLIP_FACE_BUTTONS_PREF_STRING, DEFAULT_FLIP_FACE_BUTTONS);
-        config.touchscreenTrackpad = prefs.getBoolean(TOUCHSCREEN_TRACKPAD_PREF_STRING, DEFAULT_TOUCHSCREEN_TRACKPAD);
+        // Moonwars has no trackpad mode: touch is either camera drag or direct click
+        config.touchscreenTrackpad = false;
         config.touchMouseSensitivity = prefs.getInt(TOUCH_MOUSE_SENSITIVITY_PREF_STRING, DEFAULT_TOUCH_MOUSE_SENSITIVITY);
         config.touchCameraDrag = prefs.getBoolean(TOUCH_CAMERA_DRAG_PREF_STRING, DEFAULT_TOUCH_CAMERA_DRAG);
         config.enableLatencyToast = prefs.getBoolean(LATENCY_TOAST_PREF_STRING, DEFAULT_LATENCY_TOAST);

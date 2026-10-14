@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
 
+import com.limelight.R;
 import com.limelight.binding.input.kbm.KbmBindings;
 import com.limelight.nvstream.input.ControllerPacket;
 import com.limelight.nvstream.input.MouseButtonPacket;
@@ -129,11 +130,12 @@ public class VirtualControllerConfigurationLoader {
             final int elementId,
             final byte mouseButton,
             final String text,
+            final int icon,
             final VirtualController controller,
             final Context context) {
         DigitalButton button = new DigitalButton(controller, elementId, 1, context);
         button.setText(text);
-        button.setIcon(-1);
+        button.setIcon(icon);
 
         button.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
             @Override
@@ -158,12 +160,13 @@ public class VirtualControllerConfigurationLoader {
     private static DigitalButton createActionButton(
             final int elementId,
             final String text,
+            final int icon,
             final Runnable action,
             final VirtualController controller,
             final Context context) {
         DigitalButton button = new DigitalButton(controller, elementId, 1, context);
         button.setText(text);
-        button.setIcon(-1);
+        button.setIcon(icon);
 
         button.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
             @Override
@@ -264,12 +267,14 @@ public class VirtualControllerConfigurationLoader {
     private static final int MOUSE_RIGHT_Y = 52;
     private static final int MOUSE_BUTTON_WIDTH = 12;
     private static final int MOUSE_BUTTON_HEIGHT = 9;
-    private static final int KEYBOARD_X = 35;
+    // Top row of icon buttons, right of the left stick
+    private static final int KEYBOARD_X = 36;
     private static final int KEYBOARD_Y = 1;
-    private static final int KEYBOARD_WIDTH = 14;
-    private static final int KEYBOARD_HEIGHT = 7;
-    private static final int TOUCH_MODE_X = 51;
-    private static final int SENSITIVITY_X = 67;
+    private static final int KEYBOARD_WIDTH = 10;
+    private static final int KEYBOARD_HEIGHT = 8;
+    private static final int TOUCH_MODE_X = 47;
+    private static final int SENSITIVITY_X = 58;
+    private static final int VISIBILITY_X = 69;
 
     // Keyboard/mouse mode only: skill bar swap and an extra skill button (Dragon
     // Trigger for Bladesworn), left of the face buttons
@@ -436,7 +441,7 @@ public class VirtualControllerConfigurationLoader {
         }
 
         controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_LEFT,
-                        MouseButtonPacket.BUTTON_LEFT, "LMB", controller, context),
+                        MouseButtonPacket.BUTTON_LEFT, "LMB", R.drawable.ic_osc_mouse_left, controller, context),
                 screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
                 screenScale(MOUSE_LEFT_Y, height),
                 screenScale(MOUSE_BUTTON_WIDTH, height),
@@ -444,14 +449,14 @@ public class VirtualControllerConfigurationLoader {
         );
 
         controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_RIGHT,
-                        MouseButtonPacket.BUTTON_RIGHT, "RMB", controller, context),
+                        MouseButtonPacket.BUTTON_RIGHT, "RMB", R.drawable.ic_osc_mouse_right, controller, context),
                 screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
                 screenScale(MOUSE_RIGHT_Y, height),
                 screenScale(MOUSE_BUTTON_WIDTH, height),
                 screenScale(MOUSE_BUTTON_HEIGHT, height)
         );
 
-        controller.addElement(createActionButton(VirtualControllerElement.EID_KEYBOARD, "KEYBOARD",
+        controller.addElement(createActionButton(VirtualControllerElement.EID_KEYBOARD, "KEYBOARD", R.drawable.ic_osc_keyboard,
                         new Runnable() {
                             @Override
                             public void run() {
@@ -482,7 +487,7 @@ public class VirtualControllerConfigurationLoader {
             );
         }
 
-        controller.addElement(createActionButton(VirtualControllerElement.EID_TOUCH_MODE, "TOUCH",
+        controller.addElement(createActionButton(VirtualControllerElement.EID_TOUCH_MODE, "TOUCH", R.drawable.ic_osc_touch,
                         new Runnable() {
                             @Override
                             public void run() {
@@ -495,7 +500,7 @@ public class VirtualControllerConfigurationLoader {
                 screenScale(KEYBOARD_HEIGHT, height)
         );
 
-        controller.addElement(createActionButton(VirtualControllerElement.EID_SENSITIVITY, "SENS",
+        controller.addElement(createActionButton(VirtualControllerElement.EID_SENSITIVITY, "SENS", R.drawable.ic_osc_tune,
                         new Runnable() {
                             @Override
                             public void run() {
@@ -507,6 +512,22 @@ public class VirtualControllerConfigurationLoader {
                 screenScale(KEYBOARD_WIDTH, height),
                 screenScale(KEYBOARD_HEIGHT, height)
         );
+
+        DigitalButton visibilityButton = createActionButton(VirtualControllerElement.EID_VISIBILITY, "HIDE",
+                R.drawable.ic_osc_visibility,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        controller.toggleOverlayVisibility();
+                    }
+                }, controller, context);
+        controller.addElement(visibilityButton,
+                screenScale(VISIBILITY_X, height),
+                screenScale(KEYBOARD_Y, height),
+                screenScale(KEYBOARD_WIDTH, height),
+                screenScale(KEYBOARD_HEIGHT, height)
+        );
+        controller.setVisibilityToggle(visibilityButton);
 
         controller.setOpacity(config.oscOpacity);
     }

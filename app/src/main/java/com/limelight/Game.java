@@ -1527,30 +1527,19 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             }
         }
 
-        // Cycle camera drag -> trackpad -> direct click -> camera drag
-        String message;
-        if (prefConfig.touchCameraDrag) {
-            prefConfig.touchCameraDrag = false;
-            prefConfig.touchscreenTrackpad = true;
-            message = "Touch: trackpad (drag moves the cursor, tap clicks)";
-        }
-        else if (prefConfig.touchscreenTrackpad) {
-            prefConfig.touchscreenTrackpad = false;
-            message = "Touch: direct click (tap clicks where you touch, long press right-clicks)";
-        }
-        else {
-            prefConfig.touchCameraDrag = true;
-            message = "Touch: camera (drag turns the camera, tap right-clicks)";
-        }
+        // Switch between camera drag and direct click
+        prefConfig.touchCameraDrag = !prefConfig.touchCameraDrag;
         initializeTouchContexts();
 
         // Remember the choice for the next stream too
         PreferenceManager.getDefaultSharedPreferences(this).edit()
                 .putBoolean(PreferenceConfiguration.TOUCH_CAMERA_DRAG_PREF_STRING, prefConfig.touchCameraDrag)
-                .putBoolean(PreferenceConfiguration.TOUCHSCREEN_TRACKPAD_PREF_STRING, prefConfig.touchscreenTrackpad)
                 .apply();
 
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, prefConfig.touchCameraDrag ?
+                "Touch: camera (drag turns the camera, tap right-clicks, 2 fingers zoom)" :
+                "Touch: direct click (tap clicks where you touch, long press right-clicks)",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
