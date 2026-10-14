@@ -8,6 +8,7 @@ import com.limelight.binding.input.KeyboardTranslator;
 import com.limelight.binding.input.capture.InputCaptureManager;
 import com.limelight.binding.input.capture.InputCaptureProvider;
 import com.limelight.binding.input.touch.AbsoluteTouchContext;
+import com.limelight.binding.input.touch.CameraDragTouchContext;
 import com.limelight.binding.input.touch.RelativeTouchContext;
 import com.limelight.binding.input.driver.UsbDriverService;
 import com.limelight.binding.input.evdev.EvdevListener;
@@ -1497,7 +1498,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private void initializeTouchContexts() {
         for (int i = 0; i < touchContextMap.length; i++) {
-            if (!prefConfig.touchscreenTrackpad) {
+            if (prefConfig.touchCameraDrag) {
+                touchContextMap[i] = new CameraDragTouchContext(conn, controllerHandler, i,
+                        REFERENCE_HORIZ_RES, REFERENCE_VERT_RES,
+                        streamView, prefConfig);
+            }
+            else if (!prefConfig.touchscreenTrackpad) {
                 touchContextMap[i] = new AbsoluteTouchContext(conn, i, streamView);
             }
             else {
@@ -1521,18 +1527,30 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             }
         }
 
-        prefConfig.touchscreenTrackpad = !prefConfig.touchscreenTrackpad;
+        // Cycle camera drag -> trackpad -> direct click -> camera drag
+        String message;
+        if (prefConfig.touchCameraDrag) {
+            prefConfig.touchCameraDrag = false;
+            prefConfig.touchscreenTrackpad = true;
+            message = "Touch: trackpad (drag moves the cursor, tap clicks)";
+        }
+        else if (prefConfig.touchscreenTrackpad) {
+            prefConfig.touchscreenTrackpad = false;
+            message = "Touch: direct click (tap clicks where you touch, long press right-clicks)";
+        }
+        else {
+            prefConfig.touchCameraDrag = true;
+            message = "Touch: camera (drag turns the camera, tap right-clicks)";
+        }
         initializeTouchContexts();
 
         // Remember the choice for the next stream too
         PreferenceManager.getDefaultSharedPreferences(this).edit()
-                .putBoolean("checkbox_touchscreen_trackpad", prefConfig.touchscreenTrackpad)
+                .putBoolean(PreferenceConfiguration.TOUCH_CAMERA_DRAG_PREF_STRING, prefConfig.touchCameraDrag)
+                .putBoolean(PreferenceConfiguration.TOUCHSCREEN_TRACKPAD_PREF_STRING, prefConfig.touchscreenTrackpad)
                 .apply();
 
-        Toast.makeText(this, prefConfig.touchscreenTrackpad ?
-                "Touch: trackpad (drag moves the cursor, tap clicks)" :
-                "Touch: direct click (tap clicks where you touch, long press right-clicks)",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

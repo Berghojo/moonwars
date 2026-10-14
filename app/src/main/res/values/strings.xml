@@ -213,8 +213,10 @@
     <string name="summary_kbm_camera_speed">Mouse speed when the right stick turns the camera (right mouse button held), at full deflection</string>
     <string name="title_kbm_cursor_speed">Cursor sensitivity</string>
     <string name="summary_kbm_cursor_speed">Mouse speed when the right stick moves the cursor (after pressing Guide), at full deflection</string>
-    <string name="title_touch_mouse_sensitivity">Touch mouse sensitivity</string>
-    <string name="summary_touch_mouse_sensitivity">How far the mouse moves when you drag a finger on the screen in trackpad mode</string>
+    <string name="title_touch_mouse_sensitivity">Touch sensitivity</string>
+    <string name="summary_touch_mouse_sensitivity">How far the camera or cursor moves when you drag a finger on the screen</string>
+    <string name="title_checkbox_touch_camera_drag">Drag touchscreen to turn camera</string>
+    <string name="summary_checkbox_touch_camera_drag">Touching the stream holds the right mouse button and dragging turns the camera; a tap is a right click. Takes priority over trackpad mode. The on-screen TOUCH button switches between camera, trackpad and direct click.</string>
     <string name="suffix_kbm_camera_speed">px/s</string>
     <string name="title_checkbox_kbm_invert_y">Invert camera Y axis</string>
     <string name="summary_checkbox_kbm_invert_y">Pushing the right stick up looks down</string>

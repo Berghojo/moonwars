@@ -76,7 +76,7 @@ public class SensitivityDialog {
             layout.addView(invertY);
         }
 
-        addSlider(activity, layout, "Touch mouse sensitivity (trackpad mode)", "%", 25, 400, 5,
+        addSlider(activity, layout, "Touch sensitivity (camera drag / trackpad)", "%", 25, 400, 5,
                 prefConfig.touchMouseSensitivity,
                 new ValueListener() {
                     @Override
