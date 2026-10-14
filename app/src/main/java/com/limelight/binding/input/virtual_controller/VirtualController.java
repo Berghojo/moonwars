@@ -16,13 +16,18 @@ import android.widget.Toast;
 import com.limelight.LimeLog;
 import com.limelight.R;
 import com.limelight.binding.input.ControllerHandler;
+import com.limelight.binding.input.kbm.KbmAction;
+import com.limelight.binding.input.kbm.KbmBindings;
+import com.limelight.binding.input.kbm.KbmController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VirtualController {
     public static class ControllerInputContext {
-        public short inputMap = 0x0000;
+        public int inputMap = 0;
         public byte leftTrigger = 0x00;
         public byte rightTrigger = 0x00;
         public short rightStickX = 0x0000;
@@ -58,6 +63,10 @@ public class VirtualController {
     private Button buttonConfigure = null;
 
     private List<VirtualControllerElement> elements = new ArrayList<>();
+
+    // Buttons that show the key they send in keyboard/mouse mode, with their gamepad label
+    private final Map<DigitalButton, KbmBindings.Input> boundButtons = new HashMap<>();
+    private final Map<DigitalButton, String> defaultLabels = new HashMap<>();
 
     public VirtualController(final ControllerHandler controllerHandler, FrameLayout layout, final Context context) {
         this.controllerHandler = controllerHandler;
@@ -123,6 +132,8 @@ public class VirtualController {
             frame_layout.removeView(element);
         }
         elements.clear();
+        boundButtons.clear();
+        defaultLabels.clear();
 
         frame_layout.removeView(buttonConfigure);
     }
@@ -168,6 +179,44 @@ public class VirtualController {
 
         // Apply user preferences onto the default layout
         VirtualControllerConfigurationLoader.loadFromPreferences(this, context);
+
+        KbmController kbmController = getKbmController();
+        if (kbmController != null) {
+            kbmController.setLayerListener(new KbmController.LayerListener() {
+                @Override
+                public void onLayerChanged(boolean shiftedLayerActive) {
+                    updateKbmLabels(shiftedLayerActive);
+                }
+            });
+            updateKbmLabels(kbmController.isShiftedLayerActive());
+        }
+    }
+
+    KbmController getKbmController() {
+        return controllerHandler != null ? controllerHandler.getKbmController() : null;
+    }
+
+    void registerBoundButton(DigitalButton button, KbmBindings.Input input, String defaultLabel) {
+        boundButtons.put(button, input);
+        defaultLabels.put(button, defaultLabel);
+    }
+
+    // Label each button with the key it currently sends, so the active skill bar is visible
+    private void updateKbmLabels(boolean shiftedLayerActive) {
+        KbmController kbmController = getKbmController();
+        if (kbmController == null) {
+            return;
+        }
+
+        KbmBindings bindings = kbmController.getBindings();
+        for (Map.Entry<DigitalButton, KbmBindings.Input> entry : boundButtons.entrySet()) {
+            KbmAction action = bindings.resolve(entry.getValue(), shiftedLayerActive);
+            String label = action.shortLabel();
+            if (action.type == KbmAction.Type.LAYER_TOGGLE) {
+                label = shiftedLayerActive ? "BAR 2" : "BAR 1";
+            }
+            entry.getKey().setText(label != null ? label : defaultLabels.get(entry.getKey()));
+        }
     }
 
     public ControllerMode getControllerMode() {

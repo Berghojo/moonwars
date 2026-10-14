@@ -28,9 +28,9 @@ Open **Settings → Gamepad to Keyboard & Mouse**:
 
 * **Map controller to keyboard & mouse**: on by default. Turn it off to get normal Moonlight gamepad behavior.
 * **Button bindings**: choose what every button sends. There are two columns:
-  * *Normal*: the binding used normally.
-  * *With layer shift*: used while a button bound to **Layer shift** is held (LB by default).
-    If this is set to *None*, the normal binding is used.
+  * *Bar 1*: the binding used normally.
+  * *Bar 2*: used after tapping a button bound to **Swap skill bar** (the on-screen **BAR** button),
+    or while holding one bound to **Layer shift**. If this is set to *None*, the Bar 1 binding is used.
 * **Hold right mouse button for camera**: on by default, which GW2 needs. Turn it off if you use GW2's
   *Action Camera*, or want the right stick to move the mouse cursor. The **Guide** button switches between
   the two modes while you play.
@@ -56,15 +56,37 @@ L3 and R3 (Tab and F by default) are a double-tap on the left or right stick.
 of the stream; this is the standard Moonlight on-screen controller editor. Touching the stream outside the
 controls still works as a mouse, which is handy for clicking UI, loot and dialogs.
 
-## Default bindings (Guild Wars 2)
+## Presets
 
-| Input | Normal | With LB held |
+Pick a preset under **Settings → Gamepad to Keyboard & Mouse → Button bindings**. Bladesworn is the default.
+Each on-screen button shows the key it currently sends, and the labels change when you swap bars.
+
+### Bladesworn (default)
+
+| Input | Bar 1 | Bar 2 (after tapping **BAR**) |
+|---|---|---|
+| A / B / X / Y / RB | `1` `2` `3` `4` `5` | `6` `7` `8` `9` `0` |
+| **BAR** (on-screen) | Swap to bar 2 | Swap to bar 1 |
+| **F1** (on-screen extra button) | `F1` Dragon Trigger | (same) |
+| LT / RT | `V` dodge / `Space` jump | (same) |
+| D-pad ↑ → ↓ ← | `F2` gunsaber, `F3`, `F` interact, `Tab` next target | (same) |
+| LB / L3 (double-tap left stick) | Zoom in / zoom out | (same) |
+| Start / Back | `Esc` / `M` map | `Esc` / `I` inventory |
+| Guide | Toggle camera / cursor mode | |
+| Left stick / right stick | W A S D / camera | (same) |
+
+Holding a button holds the key on the PC, so charged skills charge while held and fire on release.
+If you swap bars while holding a skill, that skill is still released correctly.
+
+### GW2 core
+
+| Input | Normal | With LB held (or after tapping BAR) |
 |---|---|---|
 | Left stick | W / A / S / D | (same) |
 | Right stick | Camera (mouse + right button) | (same) |
 | A / B / X / Y | `1` / `2` / `3` / `4` (weapon skills) | `6` / `7` / `8` / `9` (heal + utilities) |
 | RB | `5` | `0` (elite) |
-| LB | Layer shift | |
+| LB | Layer shift (hold) | |
 | LT | `V` (dodge) | |
 | RT | `Space` (jump) | |
 | D-pad ↑ → ↓ ← | `F1` `F2` `F3` `F4` (profession skills) | ↑ `F5`, → `` ` `` (weapon swap), ↓ wheel down (zoom out), ← wheel up (zoom in) |

@@ -21,6 +21,8 @@ public final class KbmAction {
         WHEEL_DOWN,
         // While held, buttons use their "shifted" binding instead of their base binding
         LAYER_SHIFT,
+        // Each press switches between the base and shifted bindings (skill bar 1-5 / 6-0)
+        LAYER_TOGGLE,
         // Toggles whether the camera stick holds the right mouse button while it moves
         TOGGLE_CAMERA_MODE,
     }
@@ -66,6 +68,7 @@ public final class KbmAction {
 
     public static final KbmAction NONE = new KbmAction(Type.NONE, 0, "None");
     public static final KbmAction LAYER_SHIFT = new KbmAction(Type.LAYER_SHIFT, 0, "Layer shift (hold)");
+    public static final KbmAction LAYER_TOGGLE = new KbmAction(Type.LAYER_TOGGLE, 0, "Swap skill bar (tap)");
     public static final KbmAction TOGGLE_CAMERA_MODE = new KbmAction(Type.TOGGLE_CAMERA_MODE, 0, "Toggle camera / cursor mode");
     public static final KbmAction WHEEL_UP = new KbmAction(Type.WHEEL_UP, 0, "Mouse wheel up");
     public static final KbmAction WHEEL_DOWN = new KbmAction(Type.WHEEL_DOWN, 0, "Mouse wheel down");
@@ -75,6 +78,7 @@ public final class KbmAction {
     static {
         List<KbmAction> list = new ArrayList<>();
         list.add(NONE);
+        list.add(LAYER_TOGGLE);
         list.add(LAYER_SHIFT);
         list.add(TOGGLE_CAMERA_MODE);
         list.add(mouse(MOUSE_LEFT));
@@ -143,6 +147,45 @@ public final class KbmAction {
         return ALL;
     }
 
+    /** True for the actions that switch which layer of bindings is active. */
+    public boolean isLayerAction() {
+        return type == Type.LAYER_SHIFT || type == Type.LAYER_TOGGLE;
+    }
+
+    /** A label short enough for an on-screen button, or null for {@link Type#NONE}. */
+    public String shortLabel() {
+        switch (type) {
+            case KEY:
+                switch (code) {
+                    case VK_BACK: return "Bksp";
+                    case VK_RETURN: return "Enter";
+                    case VK_PRIOR: return "PgUp";
+                    case VK_NEXT: return "PgDn";
+                    case VK_LEFT: return "\u2190";
+                    case VK_UP: return "\u2191";
+                    case VK_RIGHT: return "\u2192";
+                    case VK_DOWN: return "\u2193";
+                    case VK_INSERT: return "Ins";
+                    case VK_DELETE: return "Del";
+                    case VK_OEM_3: return "`";
+                    default: return keyLabel(code);
+                }
+            case MOUSE_BUTTON:
+                switch (code) {
+                    case MOUSE_LEFT: return "LMB";
+                    case MOUSE_RIGHT: return "RMB";
+                    case MOUSE_MIDDLE: return "MMB";
+                    default: return "M" + code;
+                }
+            case WHEEL_UP: return "Zoom+";
+            case WHEEL_DOWN: return "Zoom-";
+            case LAYER_SHIFT: return "Layer";
+            case LAYER_TOGGLE: return "BAR";
+            case TOGGLE_CAMERA_MODE: return "Cam";
+            default: return null;
+        }
+    }
+
     public boolean isModifierKey() {
         return type == Type.KEY && (code == VK_LSHIFT || code == VK_LCONTROL || code == VK_LMENU);
     }
@@ -154,6 +197,7 @@ public final class KbmAction {
             case WHEEL_UP: return "wheel_up";
             case WHEEL_DOWN: return "wheel_down";
             case LAYER_SHIFT: return "shift";
+            case LAYER_TOGGLE: return "bar_toggle";
             case TOGGLE_CAMERA_MODE: return "toggle_camera";
             default: return "none";
         }
@@ -169,6 +213,7 @@ public final class KbmAction {
             case "wheel_up": return WHEEL_UP;
             case "wheel_down": return WHEEL_DOWN;
             case "shift": return LAYER_SHIFT;
+            case "bar_toggle": return LAYER_TOGGLE;
             case "toggle_camera": return TOGGLE_CAMERA_MODE;
         }
         try {

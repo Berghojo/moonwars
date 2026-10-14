@@ -39,6 +39,7 @@ import com.limelight.R;
 import com.limelight.binding.input.driver.AbstractController;
 import com.limelight.binding.input.driver.UsbDriverListener;
 import com.limelight.binding.input.driver.UsbDriverService;
+import com.limelight.binding.input.kbm.KbmBindings;
 import com.limelight.binding.input.kbm.KbmController;
 import com.limelight.nvstream.NvConnection;
 import com.limelight.nvstream.input.ControllerPacket;
@@ -1371,6 +1372,9 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                     (short)0, (byte)0, (byte)0, (short)0, (short)0, (short)0, (short)0);
         }
         else {
+            // The extra on-screen keyboard/mouse buttons are never sent as gamepad buttons
+            inputMap &= ~KbmBindings.OSC_ONLY_FLAGS;
+
             conn.sendControllerInput(controllerNumber, getActiveControllerMask(),
                     inputMap,
                     leftTrigger, rightTrigger,
@@ -2879,6 +2883,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
     public void toggleKeyboard() {
         gestures.toggleKeyboard();
+    }
+
+    /** The keyboard/mouse mapper, or null when gamepad input goes to the host as a gamepad. */
+    public KbmController getKbmController() {
+        return kbmController;
     }
 
     public void toggleTouchMode() {

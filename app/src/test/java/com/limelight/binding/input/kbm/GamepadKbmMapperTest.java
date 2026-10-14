@@ -176,6 +176,50 @@ public class GamepadKbmMapperTest {
     }
 
     @Test
+    public void barButtonTogglesSkillBar() {
+        final List<Boolean> layerEvents = new ArrayList<>();
+        out = new RecordingOutput() {
+            @Override public void layerChanged(boolean shifted) { layerEvents.add(shifted); }
+        };
+        mapper = new GamepadKbmMapper(out, config, KbmBindings.bladeswornDefaults());
+        int bar = KbmBindings.Input.OSC_BAR.buttonFlag;
+
+        // Bar 1: A..RB send 1..5
+        state(A, 0, 0, 0, 0, 0);
+        state(RB, 0, 0, 0, 0, 1);
+        state(0, 0, 0, 0, 0, 2);
+        assertEquals(List.of("down 1", "up 1", "down 5", "up 5"), out.events);
+        out.events.clear();
+
+        // Tap BAR: stays on bar 2 after release, A..RB send 6..0
+        state(bar, 0, 0, 0, 0, 3);
+        state(0, 0, 0, 0, 0, 4);
+        assertTrue(mapper.isShiftedLayerActive());
+        state(A, 0, 0, 0, 0, 5);
+        state(RB, 0, 0, 0, 0, 6);
+        state(0, 0, 0, 0, 0, 7);
+        assertEquals(List.of("down 6", "up 6", "down 0", "up 0"), out.events);
+        out.events.clear();
+
+        // Holding a skill across a swap releases the key it pressed
+        state(A, 0, 0, 0, 0, 8);
+        state(A | bar, 0, 0, 0, 0, 9);
+        state(0, 0, 0, 0, 0, 10);
+        assertEquals(List.of("down 6", "up 6"), out.events);
+        assertFalse(mapper.isShiftedLayerActive());
+        assertEquals(List.of(true, false), layerEvents);
+    }
+
+    @Test
+    public void extraButtonSendsDragonTrigger() {
+        mapper = new GamepadKbmMapper(out, config, KbmBindings.bladeswornDefaults());
+        int extra = KbmBindings.Input.OSC_EXTRA.buttonFlag;
+        state(extra, 0, 0, 0, 0, 0);
+        state(0, 0, 0, 0, 0, 1);
+        assertEquals(List.of("down F1", "up F1"), out.events);
+    }
+
+    @Test
     public void sharedKeyIsReleasedOnlyByLastHolder() {
         KbmBindings bindings = KbmBindings.guildWars2Defaults();
         bindings.setBase(KbmBindings.Input.RB, KbmAction.key('W'));

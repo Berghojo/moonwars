@@ -206,7 +206,7 @@
     <string name="title_checkbox_gamepad_kbm">Map controller to keyboard &amp; mouse</string>
     <string name="summary_checkbox_gamepad_kbm">Translate the on-screen and physical controller into keyboard and mouse input (left stick = WASD, right stick = camera) for games without controller support, like Guild Wars 2</string>
     <string name="title_kbm_bindings">Button bindings</string>
-    <string name="summary_kbm_bindings">Choose which key or mouse button each controller button sends. Defaults are set up for Guild Wars 2.</string>
+    <string name="summary_kbm_bindings">Choose which key or mouse button each controller button sends. Presets for GW2 Bladesworn and core GW2.</string>
     <string name="title_checkbox_kbm_camera_hold_rmb">Hold right mouse button for camera</string>
     <string name="summary_checkbox_kbm_camera_hold_rmb">Hold the right mouse button while the right stick moves, so the camera turns in games that use right-click mouse-look (Guild Wars 2, WoW, MMOs). Turn off for action camera or plain cursor movement.</string>
     <string name="title_kbm_camera_speed">Camera sensitivity</string>
@@ -222,12 +222,13 @@
     <string name="summary_kbm_move_deadzone">How far the left stick must be pushed before movement keys are pressed</string>
     <string name="suffix_kbm_percent">%</string>
     <string name="title_kbm_bindings_activity">Button Bindings</string>
-    <string name="kbm_bindings_header">Pick what each controller input sends. While a button bound to \"Layer shift\" is held (LB by default), the \"With layer shift\" column is used instead; \"None\" there falls back to the normal binding.</string>
+    <string name="kbm_bindings_header">Pick what each controller input sends. After tapping a button bound to \"Swap skill bar\" (the on-screen BAR button), or while holding one bound to \"Layer shift\", the \"Bar 2\" column is used instead. \"None\" in Bar 2 falls back to Bar 1.</string>
     <string name="kbm_bindings_column_input">Input</string>
-    <string name="kbm_bindings_column_base">Normal</string>
-    <string name="kbm_bindings_column_shift">With layer shift</string>
-    <string name="kbm_bindings_reset">Reset to Guild Wars 2 defaults</string>
-    <string name="kbm_bindings_reset_done">Bindings reset to Guild Wars 2 defaults</string>
+    <string name="kbm_bindings_column_base">Bar 1</string>
+    <string name="kbm_bindings_column_shift">Bar 2</string>
+    <string name="kbm_preset_bladesworn">Bladesworn preset</string>
+    <string name="kbm_preset_gw2">GW2 core preset</string>
+    <string name="kbm_bindings_preset_loaded">Loaded %1$s</string>
     <string name="category_on_screen_controls_settings">On-screen Controls Settings</string>
     <string name="title_checkbox_show_onscreen_controls">Show on-screen controls</string>
     <string name="summary_checkbox_show_onscreen_controls">Show virtual controller overlay on touchscreen</string>

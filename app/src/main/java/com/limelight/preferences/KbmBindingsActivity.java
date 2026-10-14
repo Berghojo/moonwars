@@ -48,19 +48,10 @@ public class KbmBindingsActivity extends Activity {
         header.setPadding(0, 0, 0, dp(8));
         root.addView(header);
 
-        Button reset = new Button(this);
-        reset.setText(R.string.kbm_bindings_reset);
-        reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bindings = KbmBindings.guildWars2Defaults();
-                KbmController.saveBindings(KbmBindingsActivity.this, bindings);
-                populateRows();
-                Toast.makeText(KbmBindingsActivity.this, R.string.kbm_bindings_reset_done, Toast.LENGTH_SHORT).show();
-            }
-        });
-        root.addView(reset, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        LinearLayout presets = newRow();
+        presets.addView(newPresetButton(R.string.kbm_preset_bladesworn, true));
+        presets.addView(newPresetButton(R.string.kbm_preset_gw2, false));
+        root.addView(presets);
 
         LinearLayout columnHeader = newRow();
         columnHeader.addView(newLabel(getString(R.string.kbm_bindings_column_input), true), labelParams());
@@ -110,6 +101,24 @@ public class KbmBindingsActivity extends Activity {
 
             rows.addView(row);
         }
+    }
+
+    private Button newPresetButton(final int nameRes, final boolean bladesworn) {
+        Button button = new Button(this);
+        button.setText(nameRes);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Build a fresh copy each time, since the spinners edit it in place
+                bindings = bladesworn ? KbmBindings.bladeswornDefaults() : KbmBindings.guildWars2Defaults();
+                KbmController.saveBindings(KbmBindingsActivity.this, bindings);
+                populateRows();
+                Toast.makeText(KbmBindingsActivity.this,
+                        getString(R.string.kbm_bindings_preset_loaded, getString(nameRes)),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        return button;
     }
 
     private interface ActionSetter {

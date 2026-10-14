@@ -33,6 +33,8 @@ public class GamepadKbmMapper {
         void mouseMove(int dx, int dy);
         void mouseScroll(int clicks);
         default void cameraModeChanged(boolean holdRightMouse) {}
+        // Called when the active layer (skill bar) changes
+        default void layerChanged(boolean shiftedLayerActive) {}
     }
 
     public static class Config {
@@ -78,6 +80,7 @@ public class GamepadKbmMapper {
     private final Map<Integer, Integer> mouseHolds = new HashMap<>();
 
     private int layerShiftHolds;
+    private boolean layerToggled;
     private boolean cameraHoldsRightMouse;
     private boolean rightMouseHeldByCamera;
 
@@ -125,11 +128,11 @@ public class GamepadKbmMapper {
                 if (!pressed.get(input) || activeActions.containsKey(input)) {
                     continue;
                 }
-                boolean isShift = bindings.getBase(input).type == KbmAction.Type.LAYER_SHIFT;
-                if ((pass == 0) != isShift) {
+                boolean isLayerAction = bindings.getBase(input).isLayerAction();
+                if ((pass == 0) != isLayerAction) {
                     continue;
                 }
-                KbmAction action = isShift ? bindings.getBase(input) : bindings.resolve(input, layerShiftHolds > 0);
+                KbmAction action = isLayerAction ? bindings.getBase(input) : bindings.resolve(input, isShiftedLayerActive());
                 activeActions.put(input, action);
                 press(input, action, nowMs);
             }
@@ -219,7 +222,12 @@ public class GamepadKbmMapper {
             output.mouseButtonUp(button);
         }
         mouseHolds.clear();
+        boolean wasShifted = isShiftedLayerActive();
         layerShiftHolds = 0;
+        layerToggled = false;
+        if (wasShifted) {
+            output.layerChanged(false);
+        }
         cameraX = cameraY = 0;
         pendingMouseX = pendingMouseY = 0;
     }
@@ -235,6 +243,22 @@ public class GamepadKbmMapper {
         }
         else {
             unholdMouse(button);
+        }
+    }
+
+    /** True while the shifted layer (skill bar 6-0) is in use. */
+    public synchronized boolean isShiftedLayerActive() {
+        return layerShiftHolds > 0 || layerToggled;
+    }
+
+    public KbmBindings getBindings() {
+        return bindings;
+    }
+
+    private void notifyLayerChange(boolean wasShifted) {
+        boolean shifted = isShiftedLayerActive();
+        if (shifted != wasShifted) {
+            output.layerChanged(shifted);
         }
     }
 
@@ -275,9 +299,18 @@ public class GamepadKbmMapper {
                 scrollFor(action);
                 wheelRepeatDeadlines.put(input, nowMs + config.wheelRepeatDelayMs);
                 break;
-            case LAYER_SHIFT:
+            case LAYER_SHIFT: {
+                boolean wasShifted = isShiftedLayerActive();
                 layerShiftHolds++;
+                notifyLayerChange(wasShifted);
                 break;
+            }
+            case LAYER_TOGGLE: {
+                boolean wasShifted = isShiftedLayerActive();
+                layerToggled = !layerToggled;
+                notifyLayerChange(wasShifted);
+                break;
+            }
             case TOGGLE_CAMERA_MODE:
                 cameraHoldsRightMouse = !cameraHoldsRightMouse;
                 if (!cameraHoldsRightMouse && rightMouseHeldByCamera) {
@@ -303,9 +336,12 @@ public class GamepadKbmMapper {
             case WHEEL_DOWN:
                 wheelRepeatDeadlines.remove(input);
                 break;
-            case LAYER_SHIFT:
+            case LAYER_SHIFT: {
+                boolean wasShifted = isShiftedLayerActive();
                 layerShiftHolds = Math.max(0, layerShiftHolds - 1);
+                notifyLayerChange(wasShifted);
                 break;
+            }
             default:
                 break;
         }

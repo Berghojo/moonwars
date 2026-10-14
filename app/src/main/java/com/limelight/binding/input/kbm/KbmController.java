@@ -40,6 +40,12 @@ public class KbmController implements GamepadKbmMapper.Output {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean ticking;
     private boolean stopped;
+    private volatile LayerListener layerListener;
+
+    public interface LayerListener {
+        // Always called on the main thread
+        void onLayerChanged(boolean shiftedLayerActive);
+    }
 
     private final Runnable tickRunnable = new Runnable() {
         @Override
@@ -113,6 +119,31 @@ public class KbmController implements GamepadKbmMapper.Output {
             return;
         }
         mapper.setMouseButton(button, down);
+    }
+
+    public void setLayerListener(LayerListener listener) {
+        this.layerListener = listener;
+    }
+
+    public KbmBindings getBindings() {
+        return mapper.getBindings();
+    }
+
+    public boolean isShiftedLayerActive() {
+        return mapper.isShiftedLayerActive();
+    }
+
+    @Override
+    public void layerChanged(final boolean shiftedLayerActive) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                LayerListener listener = layerListener;
+                if (listener != null) {
+                    listener.onLayerChanged(shiftedLayerActive);
+                }
+            }
+        });
     }
 
     /** Releases everything held on the host and stops processing input. */

@@ -34,6 +34,10 @@ public final class KbmBindings {
         L3("L3 (left stick click)", 0x0040),
         R3("R3 (right stick click)", 0x0080),
         GUIDE("Guide", 0x0400),
+        // Extra on-screen buttons that only exist in keyboard/mouse mode. Their flags
+        // are above the GameStream button range and never reach the host.
+        OSC_BAR("On-screen BAR button", 0x01000000),
+        OSC_EXTRA("On-screen extra button", 0x02000000),
         LS_UP("Left stick up", 0),
         LS_DOWN("Left stick down", 0),
         LS_LEFT("Left stick left", 0),
@@ -47,10 +51,23 @@ public final class KbmBindings {
             this.buttonFlag = buttonFlag;
         }
 
+        /** The button input with the given flag, or null if there is none. */
+        public static Input forButtonFlag(int flag) {
+            for (Input input : values()) {
+                if (input.buttonFlag != 0 && input.buttonFlag == flag) {
+                    return input;
+                }
+            }
+            return null;
+        }
+
         public boolean isStickDirection() {
             return this == LS_UP || this == LS_DOWN || this == LS_LEFT || this == LS_RIGHT;
         }
     }
+
+    // Button flags used only by the on-screen BAR and extra buttons
+    public static final int OSC_ONLY_FLAGS = 0x03000000;
 
     public static final String PREF_PREFIX_BASE = "kbm_bind_base_";
     public static final String PREF_PREFIX_SHIFT = "kbm_bind_shift_";
@@ -111,7 +128,55 @@ public final class KbmBindings {
         b.setShifted(Input.BACK, KbmAction.key('I'));
         b.setBase(Input.GUIDE, KbmAction.TOGGLE_CAMERA_MODE);
 
+        b.setBase(Input.OSC_BAR, KbmAction.LAYER_TOGGLE);
+        b.setBase(Input.OSC_EXTRA, KbmAction.key(KbmAction.VK_F1));
+
         return b;
+    }
+
+    /**
+     * Guild Wars 2 Bladesworn: the BAR button swaps the face buttons + RB between
+     * skills 1-5 and 6-0, Dragon Trigger (F1) has its own on-screen button, the
+     * gunsaber (F2) and F3 are on the D-pad, and interact/target are on the D-pad
+     * instead of stick clicks.
+     */
+    public static KbmBindings bladeswornDefaults() {
+        KbmBindings b = new KbmBindings();
+
+        b.setBase(Input.LS_UP, KbmAction.key('W'));
+        b.setBase(Input.LS_LEFT, KbmAction.key('A'));
+        b.setBase(Input.LS_DOWN, KbmAction.key('S'));
+        b.setBase(Input.LS_RIGHT, KbmAction.key('D'));
+
+        Input[] skillButtons = { Input.A, Input.B, Input.X, Input.Y, Input.RB };
+        for (int i = 0; i < skillButtons.length; i++) {
+            b.setBase(skillButtons[i], KbmAction.key('1' + i));
+            b.setShifted(skillButtons[i], KbmAction.key(i < 4 ? '6' + i : '0'));
+        }
+        b.setBase(Input.OSC_BAR, KbmAction.LAYER_TOGGLE);
+        b.setBase(Input.OSC_EXTRA, KbmAction.key(KbmAction.VK_F1)); // Dragon Trigger
+
+        b.setBase(Input.LT, KbmAction.key('V')); // dodge
+        b.setBase(Input.RT, KbmAction.key(KbmAction.VK_SPACE)); // jump
+        b.setBase(Input.LB, KbmAction.WHEEL_UP); // zoom in
+        b.setBase(Input.L3, KbmAction.WHEEL_DOWN); // zoom out
+
+        b.setBase(Input.DPAD_UP, KbmAction.key(KbmAction.VK_F1 + 1)); // gunsaber
+        b.setBase(Input.DPAD_RIGHT, KbmAction.key(KbmAction.VK_F1 + 2));
+        b.setBase(Input.DPAD_DOWN, KbmAction.key('F')); // interact
+        b.setBase(Input.DPAD_LEFT, KbmAction.key(KbmAction.VK_TAB)); // next target
+
+        b.setBase(Input.START, KbmAction.key(KbmAction.VK_ESCAPE));
+        b.setBase(Input.BACK, KbmAction.key('M'));
+        b.setShifted(Input.BACK, KbmAction.key('I'));
+        b.setBase(Input.GUIDE, KbmAction.TOGGLE_CAMERA_MODE);
+
+        return b;
+    }
+
+    /** The bindings used when nothing has been customized. */
+    public static KbmBindings defaults() {
+        return bladeswornDefaults();
     }
 
     public KbmAction getBase(Input input) {
@@ -154,11 +219,11 @@ public final class KbmBindings {
     }
 
     /**
-     * Loads bindings from preference key/value pairs, using the GW2 defaults
+     * Loads bindings from preference key/value pairs, using {@link #defaults()}
      * for anything missing or malformed.
      */
     public static KbmBindings fromMap(Map<String, ?> map) {
-        KbmBindings b = guildWars2Defaults();
+        KbmBindings b = defaults();
         for (Input input : Input.values()) {
             KbmAction action = decodeValue(map.get(PREF_PREFIX_BASE + input.name()));
             if (action != null) {

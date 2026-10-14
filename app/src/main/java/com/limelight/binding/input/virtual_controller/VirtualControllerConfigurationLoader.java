@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
 
+import com.limelight.binding.input.kbm.KbmBindings;
 import com.limelight.nvstream.input.ControllerPacket;
 import com.limelight.nvstream.input.MouseButtonPacket;
 import com.limelight.preferences.PreferenceConfiguration;
@@ -85,6 +86,11 @@ public class VirtualControllerConfigurationLoader {
         DigitalButton button = new DigitalButton(controller, elementId, layer, context);
         button.setText(text);
         button.setIcon(icon);
+
+        KbmBindings.Input input = KbmBindings.Input.forButtonFlag(keyShort);
+        if (input != null) {
+            controller.registerBoundButton(button, input, text);
+        }
 
         button.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
             @Override
@@ -187,6 +193,7 @@ public class VirtualControllerConfigurationLoader {
         LeftTrigger button = new LeftTrigger(controller, layer, context);
         button.setText(text);
         button.setIcon(icon);
+        controller.registerBoundButton(button, KbmBindings.Input.LT, text);
         return button;
     }
 
@@ -199,6 +206,7 @@ public class VirtualControllerConfigurationLoader {
         RightTrigger button = new RightTrigger(controller, layer, context);
         button.setText(text);
         button.setIcon(icon);
+        controller.registerBoundButton(button, KbmBindings.Input.RT, text);
         return button;
     }
 
@@ -261,6 +269,12 @@ public class VirtualControllerConfigurationLoader {
     private static final int KEYBOARD_WIDTH = 14;
     private static final int KEYBOARD_HEIGHT = 7;
     private static final int TOUCH_MODE_X = 51;
+
+    // Keyboard/mouse mode only: skill bar swap and an extra skill button (Dragon
+    // Trigger for Bladesworn), left of the face buttons
+    private static final int KBM_EXTRA_X = 84;
+    private static final int BAR_Y = 2;
+    private static final int EXTRA_SKILL_Y = 12;
 
     public static void createDefaultLayout(final VirtualController controller, final Context context) {
 
@@ -448,6 +462,24 @@ public class VirtualControllerConfigurationLoader {
                 screenScale(KEYBOARD_WIDTH, height),
                 screenScale(KEYBOARD_HEIGHT, height)
         );
+
+        if (controller.getKbmController() != null) {
+            controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_BAR,
+                            KbmBindings.Input.OSC_BAR.buttonFlag, 0, 1, "BAR", -1, controller, context),
+                    screenScale(KBM_EXTRA_X, height) + rightDisplacement,
+                    screenScale(BAR_Y, height),
+                    screenScale(MOUSE_BUTTON_WIDTH, height),
+                    screenScale(MOUSE_BUTTON_HEIGHT, height)
+            );
+
+            controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_EXTRA,
+                            KbmBindings.Input.OSC_EXTRA.buttonFlag, 0, 1, "EXTRA", -1, controller, context),
+                    screenScale(KBM_EXTRA_X, height) + rightDisplacement,
+                    screenScale(EXTRA_SKILL_Y, height),
+                    screenScale(MOUSE_BUTTON_WIDTH, height),
+                    screenScale(MOUSE_BUTTON_HEIGHT, height)
+            );
+        }
 
         controller.addElement(createActionButton(VirtualControllerElement.EID_TOUCH_MODE, "TOUCH",
                         new Runnable() {
