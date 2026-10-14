@@ -210,6 +210,12 @@ public class VirtualController {
         }
     }
 
+    void toggleTouchMode() {
+        if (controllerHandler != null) {
+            controllerHandler.toggleTouchMode();
+        }
+    }
+
     void sendControllerInputContext() {
         // Cancel retransmissions of prior gamepad inputs
         handler.removeCallbacks(delayedRetransmitRunnable);

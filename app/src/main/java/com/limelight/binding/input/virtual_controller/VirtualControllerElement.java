@@ -39,6 +39,7 @@ public abstract class VirtualControllerElement extends View {
     public static final int EID_MOUSE_LEFT = 17;
     public static final int EID_MOUSE_RIGHT = 18;
     public static final int EID_KEYBOARD = 19;
+    public static final int EID_TOUCH_MODE = 20;
 
     protected VirtualController virtualController;
     protected final int elementId;

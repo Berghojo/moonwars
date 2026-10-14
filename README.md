@@ -45,6 +45,11 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
 * **LMB** / **RMB**: left and right mouse buttons. Hold them to drag.
 * **KEYBOARD**: opens Android's keyboard so you can type to the PC, e.g. in chat. Tap it again to close it.
   A three-finger tap on the stream does the same.
+* **TOUCH**: switches how touching the stream works:
+  * *Trackpad* (default): dragging a finger moves the cursor, like a laptop touchpad. A tap clicks.
+  * *Direct click*: a tap clicks exactly where you touch. A long press right-clicks, and dragging
+    holds the left button.
+  The app remembers your choice for the next stream.
 
 L3 and R3 (Tab and F by default) are a double-tap on the left or right stick.
  To move or resize buttons, use the gear icon in the top-left

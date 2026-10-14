@@ -2881,6 +2881,10 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         gestures.toggleKeyboard();
     }
 
+    public void toggleTouchMode() {
+        gestures.toggleTouchMode();
+    }
+
     @Override
     public void reportControllerState(int controllerId, int buttonFlags,
                                       float leftStickX, float leftStickY,

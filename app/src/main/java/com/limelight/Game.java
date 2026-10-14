@@ -78,6 +78,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
@@ -498,17 +499,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         InputManager inputManager = (InputManager) getSystemService(Context.INPUT_SERVICE);
         inputManager.registerInputDeviceListener(keyboardTranslator, null);
 
-        // Initialize touch contexts
-        for (int i = 0; i < touchContextMap.length; i++) {
-            if (!prefConfig.touchscreenTrackpad) {
-                touchContextMap[i] = new AbsoluteTouchContext(conn, i, streamView);
-            }
-            else {
-                touchContextMap[i] = new RelativeTouchContext(conn, i,
-                        REFERENCE_HORIZ_RES, REFERENCE_VERT_RES,
-                        streamView, prefConfig);
-            }
-        }
+        initializeTouchContexts();
 
         if (prefConfig.onscreenController) {
             // create virtual onscreen controller
@@ -1501,6 +1492,41 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         else {
             return null;
         }
+    }
+
+    private void initializeTouchContexts() {
+        for (int i = 0; i < touchContextMap.length; i++) {
+            if (!prefConfig.touchscreenTrackpad) {
+                touchContextMap[i] = new AbsoluteTouchContext(conn, i, streamView);
+            }
+            else {
+                touchContextMap[i] = new RelativeTouchContext(conn, i,
+                        REFERENCE_HORIZ_RES, REFERENCE_VERT_RES,
+                        streamView, prefConfig);
+            }
+        }
+    }
+
+    @Override
+    public void toggleTouchMode() {
+        for (TouchContext touchContext : touchContextMap) {
+            if (touchContext != null) {
+                touchContext.cancelTouch();
+            }
+        }
+
+        prefConfig.touchscreenTrackpad = !prefConfig.touchscreenTrackpad;
+        initializeTouchContexts();
+
+        // Remember the choice for the next stream too
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putBoolean("checkbox_touchscreen_trackpad", prefConfig.touchscreenTrackpad)
+                .apply();
+
+        Toast.makeText(this, prefConfig.touchscreenTrackpad ?
+                "Touch: trackpad (drag moves the cursor, tap clicks)" :
+                "Touch: direct click (tap clicks where you touch, long press right-clicks)",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override

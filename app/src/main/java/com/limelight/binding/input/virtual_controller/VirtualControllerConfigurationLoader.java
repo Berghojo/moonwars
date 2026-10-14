@@ -148,11 +148,15 @@ public class VirtualControllerConfigurationLoader {
         return button;
     }
 
-    private static DigitalButton createKeyboardButton(
+    // A button that runs an action when released
+    private static DigitalButton createActionButton(
+            final int elementId,
+            final String text,
+            final Runnable action,
             final VirtualController controller,
             final Context context) {
-        DigitalButton button = new DigitalButton(controller, VirtualControllerElement.EID_KEYBOARD, 1, context);
-        button.setText("KEYBOARD");
+        DigitalButton button = new DigitalButton(controller, elementId, 1, context);
+        button.setText(text);
         button.setIcon(-1);
 
         button.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
@@ -166,8 +170,8 @@ public class VirtualControllerConfigurationLoader {
 
             @Override
             public void onRelease() {
-                // Toggle on release so the keyboard doesn't steal the touch that opened it
-                controller.toggleKeyboard();
+                // Act on release so a keyboard or mode change doesn't steal the touch that triggered it
+                action.run();
             }
         });
 
@@ -256,6 +260,7 @@ public class VirtualControllerConfigurationLoader {
     private static final int KEYBOARD_Y = 1;
     private static final int KEYBOARD_WIDTH = 14;
     private static final int KEYBOARD_HEIGHT = 7;
+    private static final int TOUCH_MODE_X = 51;
 
     public static void createDefaultLayout(final VirtualController controller, final Context context) {
 
@@ -431,8 +436,27 @@ public class VirtualControllerConfigurationLoader {
                 screenScale(MOUSE_BUTTON_HEIGHT, height)
         );
 
-        controller.addElement(createKeyboardButton(controller, context),
+        controller.addElement(createActionButton(VirtualControllerElement.EID_KEYBOARD, "KEYBOARD",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                controller.toggleKeyboard();
+                            }
+                        }, controller, context),
                 screenScale(KEYBOARD_X, height),
+                screenScale(KEYBOARD_Y, height),
+                screenScale(KEYBOARD_WIDTH, height),
+                screenScale(KEYBOARD_HEIGHT, height)
+        );
+
+        controller.addElement(createActionButton(VirtualControllerElement.EID_TOUCH_MODE, "TOUCH",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                controller.toggleTouchMode();
+                            }
+                        }, controller, context),
+                screenScale(TOUCH_MODE_X, height),
                 screenScale(KEYBOARD_Y, height),
                 screenScale(KEYBOARD_WIDTH, height),
                 screenScale(KEYBOARD_HEIGHT, height)
