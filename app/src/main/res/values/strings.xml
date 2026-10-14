@@ -209,8 +209,12 @@
     <string name="summary_kbm_bindings">Choose which key or mouse button each controller button sends. Defaults are set up for Guild Wars 2.</string>
     <string name="title_checkbox_kbm_camera_hold_rmb">Hold right mouse button for camera</string>
     <string name="summary_checkbox_kbm_camera_hold_rmb">Hold the right mouse button while the right stick moves, so the camera turns in games that use right-click mouse-look (Guild Wars 2, WoW, MMOs). Turn off for action camera or plain cursor movement.</string>
-    <string name="title_kbm_camera_speed">Camera speed</string>
-    <string name="summary_kbm_camera_speed">Mouse speed at full right stick deflection</string>
+    <string name="title_kbm_camera_speed">Camera sensitivity</string>
+    <string name="summary_kbm_camera_speed">Mouse speed when the right stick turns the camera (right mouse button held), at full deflection</string>
+    <string name="title_kbm_cursor_speed">Cursor sensitivity</string>
+    <string name="summary_kbm_cursor_speed">Mouse speed when the right stick moves the cursor (after pressing Guide), at full deflection</string>
+    <string name="title_touch_mouse_sensitivity">Touch mouse sensitivity</string>
+    <string name="summary_touch_mouse_sensitivity">How far the mouse moves when you drag a finger on the screen in trackpad mode</string>
     <string name="suffix_kbm_camera_speed">px/s</string>
     <string name="title_checkbox_kbm_invert_y">Invert camera Y axis</string>
     <string name="summary_checkbox_kbm_invert_y">Pushing the right stick up looks down</string>

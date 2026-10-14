@@ -38,8 +38,10 @@ public class GamepadKbmMapper {
     public static class Config {
         // Hold the right mouse button while the camera stick is deflected
         public boolean cameraHoldsRightMouse = true;
-        // Mouse speed in pixels per second at full right stick deflection
+        // Mouse speed in pixels per second at full right stick deflection, in
+        // camera mode (right mouse button held) and cursor mode respectively
         public float cameraSpeed = 1500f;
+        public float cursorSpeed = 800f;
         // Response curve exponent; higher gives finer control near the center
         public float cameraCurve = 1.8f;
         public boolean invertCameraY = false;
@@ -161,7 +163,8 @@ public class GamepadKbmMapper {
 
             float magnitude = (float) Math.hypot(cameraX, cameraY);
             float scaled = Math.min(1f, (magnitude - config.cameraDeadzone) / (1f - config.cameraDeadzone));
-            float speed = config.cameraSpeed * (float) Math.pow(scaled, config.cameraCurve);
+            float maxSpeed = cameraHoldsRightMouse ? config.cameraSpeed : config.cursorSpeed;
+            float speed = maxSpeed * (float) Math.pow(scaled, config.cameraCurve);
             float seconds = deltaMs / 1000f;
             // Stick up is positive Y, but mouse up is negative Y
             float ySign = config.invertCameraY ? 1f : -1f;
@@ -219,6 +222,20 @@ public class GamepadKbmMapper {
         layerShiftHolds = 0;
         cameraX = cameraY = 0;
         pendingMouseX = pendingMouseY = 0;
+    }
+
+    /**
+     * Presses or releases a mouse button directly (e.g. an on-screen click button).
+     * Shares reference counts with the camera, so releasing an on-screen right
+     * click doesn't cancel the camera's held right mouse button.
+     */
+    public synchronized void setMouseButton(int button, boolean down) {
+        if (down) {
+            holdMouse(button);
+        }
+        else {
+            unholdMouse(button);
+        }
     }
 
     public synchronized boolean isCameraHoldingRightMouse() {

@@ -34,9 +34,20 @@ Open **Settings → Gamepad to Keyboard & Mouse**:
 * **Hold right mouse button for camera**: on by default, which GW2 needs. Turn it off if you use GW2's
   *Action Camera*, or want the right stick to move the mouse cursor. The **Guide** button switches between
   the two modes while you play.
-* **Camera speed**, **Invert camera Y axis**, **Movement stick deadzone**.
+* **Camera sensitivity**: right stick speed while turning the camera.
+* **Cursor sensitivity**: right stick speed in cursor mode (after pressing Guide).
+* **Invert camera Y axis**, **Movement stick deadzone**.
+* **Touch mouse sensitivity** (under *Input Settings*): how fast the cursor moves when you drag a finger
+  on the screen in trackpad mode.
 
-The on-screen controller is enabled by default. To move or resize buttons, use the gear icon in the top-left
+The on-screen controller is enabled by default. Next to the gamepad buttons, it adds:
+
+* **LMB** / **RMB**: left and right mouse buttons. Hold them to drag.
+* **KEYBOARD**: opens Android's keyboard so you can type to the PC, e.g. in chat. Tap it again to close it.
+  A three-finger tap on the stream does the same.
+
+L3 and R3 (Tab and F by default) are a double-tap on the left or right stick.
+ To move or resize buttons, use the gear icon in the top-left
 of the stream; this is the standard Moonlight on-screen controller editor. Touching the stream outside the
 controls still works as a mouse, which is handy for clicking UI, loot and dialogs.
 

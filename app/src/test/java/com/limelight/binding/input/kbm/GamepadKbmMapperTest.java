@@ -149,6 +149,33 @@ public class GamepadKbmMapperTest {
     }
 
     @Test
+    public void cursorModeUsesCursorSpeed() {
+        config.cameraSpeed = 2000;
+        config.cursorSpeed = 500;
+        state(0x0400, 0, 0, 0, 0, 0); // Guide: switch to cursor mode
+        state(0, 0, 0, FULL, 0, 1);
+        for (long t = 1; t <= 1001; t += 10) {
+            mapper.tick(t);
+        }
+        assertEquals(config.cursorSpeed, out.mouseX, config.cursorSpeed * 0.03);
+    }
+
+    @Test
+    public void onScreenRightClickDoesNotCancelCameraHold() {
+        state(0, 0, 0, FULL, 0, 0);
+        mapper.tick(0);
+        mapper.setMouseButton(KbmAction.MOUSE_RIGHT, true);
+        mapper.setMouseButton(KbmAction.MOUSE_RIGHT, false);
+        // Camera still holds the button, so nothing was released
+        assertEquals(List.of("mdown " + KbmAction.MOUSE_RIGHT), out.events);
+
+        mapper.setMouseButton(KbmAction.MOUSE_LEFT, true);
+        mapper.setMouseButton(KbmAction.MOUSE_LEFT, false);
+        assertEquals(List.of("mdown " + KbmAction.MOUSE_RIGHT,
+                "mdown " + KbmAction.MOUSE_LEFT, "mup " + KbmAction.MOUSE_LEFT), out.events);
+    }
+
+    @Test
     public void sharedKeyIsReleasedOnlyByLastHolder() {
         KbmBindings bindings = KbmBindings.guildWars2Defaults();
         bindings.setBase(KbmBindings.Input.RB, KbmAction.key('W'));

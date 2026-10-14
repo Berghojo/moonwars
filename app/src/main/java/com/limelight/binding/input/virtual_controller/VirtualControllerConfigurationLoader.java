@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
 
 import com.limelight.nvstream.input.ControllerPacket;
+import com.limelight.nvstream.input.MouseButtonPacket;
 import com.limelight.preferences.PreferenceConfiguration;
 
 import org.json.JSONException;
@@ -118,6 +119,61 @@ public class VirtualControllerConfigurationLoader {
         return button;
     }
 
+    private static DigitalButton createMouseButton(
+            final int elementId,
+            final byte mouseButton,
+            final String text,
+            final VirtualController controller,
+            final Context context) {
+        DigitalButton button = new DigitalButton(controller, elementId, 1, context);
+        button.setText(text);
+        button.setIcon(-1);
+
+        button.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
+            @Override
+            public void onClick() {
+                controller.sendMouseButton(mouseButton, true);
+            }
+
+            @Override
+            public void onLongClick() {
+            }
+
+            @Override
+            public void onRelease() {
+                controller.sendMouseButton(mouseButton, false);
+            }
+        });
+
+        return button;
+    }
+
+    private static DigitalButton createKeyboardButton(
+            final VirtualController controller,
+            final Context context) {
+        DigitalButton button = new DigitalButton(controller, VirtualControllerElement.EID_KEYBOARD, 1, context);
+        button.setText("KEYBOARD");
+        button.setIcon(-1);
+
+        button.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
+            @Override
+            public void onClick() {
+            }
+
+            @Override
+            public void onLongClick() {
+            }
+
+            @Override
+            public void onRelease() {
+                // Toggle on release so the keyboard doesn't steal the touch that opened it
+                controller.toggleKeyboard();
+            }
+        });
+
+        return button;
+    }
+
     private static DigitalButton createLeftTrigger(
             final int layer,
             final String text,
@@ -188,6 +244,18 @@ public class VirtualControllerConfigurationLoader {
     // Make the Guide Menu be in the center of START and BACK menu
     private static final int GUIDE_X = START_X-BACK_X;
     private static final int GUIDE_Y = START_BACK_Y;
+
+    // Mouse click buttons sit left of the right stick, the keyboard button
+    // at the top right of the left stick
+    private static final int MOUSE_BUTTON_X = 84;
+    private static final int MOUSE_LEFT_Y = 42;
+    private static final int MOUSE_RIGHT_Y = 52;
+    private static final int MOUSE_BUTTON_WIDTH = 12;
+    private static final int MOUSE_BUTTON_HEIGHT = 9;
+    private static final int KEYBOARD_X = 35;
+    private static final int KEYBOARD_Y = 1;
+    private static final int KEYBOARD_WIDTH = 14;
+    private static final int KEYBOARD_HEIGHT = 7;
 
     public static void createDefaultLayout(final VirtualController controller, final Context context) {
 
@@ -346,6 +414,29 @@ public class VirtualControllerConfigurationLoader {
                     screenScale(START_BACK_HEIGHT, height)
             );
         }
+
+        controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_LEFT,
+                        MouseButtonPacket.BUTTON_LEFT, "LMB", controller, context),
+                screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
+                screenScale(MOUSE_LEFT_Y, height),
+                screenScale(MOUSE_BUTTON_WIDTH, height),
+                screenScale(MOUSE_BUTTON_HEIGHT, height)
+        );
+
+        controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_RIGHT,
+                        MouseButtonPacket.BUTTON_RIGHT, "RMB", controller, context),
+                screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
+                screenScale(MOUSE_RIGHT_Y, height),
+                screenScale(MOUSE_BUTTON_WIDTH, height),
+                screenScale(MOUSE_BUTTON_HEIGHT, height)
+        );
+
+        controller.addElement(createKeyboardButton(controller, context),
+                screenScale(KEYBOARD_X, height),
+                screenScale(KEYBOARD_Y, height),
+                screenScale(KEYBOARD_WIDTH, height),
+                screenScale(KEYBOARD_HEIGHT, height)
+        );
 
         controller.setOpacity(config.oscOpacity);
     }

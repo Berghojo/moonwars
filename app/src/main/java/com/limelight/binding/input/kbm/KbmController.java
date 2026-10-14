@@ -20,6 +20,7 @@ public class KbmController implements GamepadKbmMapper.Output {
     public static final String PREF_ENABLED = "checkbox_gamepad_kbm";
     public static final String PREF_CAMERA_HOLD_RMB = "checkbox_kbm_camera_hold_rmb";
     public static final String PREF_CAMERA_SPEED = "seekbar_kbm_camera_speed";
+    public static final String PREF_CURSOR_SPEED = "seekbar_kbm_cursor_speed";
     public static final String PREF_INVERT_Y = "checkbox_kbm_invert_y";
     public static final String PREF_MOVE_DEADZONE = "seekbar_kbm_move_deadzone";
 
@@ -27,6 +28,7 @@ public class KbmController implements GamepadKbmMapper.Output {
     public static final boolean DEFAULT_CAMERA_HOLD_RMB = true;
     // Pixels per second at full right stick deflection
     public static final int DEFAULT_CAMERA_SPEED = 1500;
+    public static final int DEFAULT_CURSOR_SPEED = 800;
     public static final boolean DEFAULT_INVERT_Y = false;
     public static final int DEFAULT_MOVE_DEADZONE = 30;
 
@@ -73,6 +75,7 @@ public class KbmController implements GamepadKbmMapper.Output {
         GamepadKbmMapper.Config config = new GamepadKbmMapper.Config();
         config.cameraHoldsRightMouse = prefs.getBoolean(PREF_CAMERA_HOLD_RMB, DEFAULT_CAMERA_HOLD_RMB);
         config.cameraSpeed = prefs.getInt(PREF_CAMERA_SPEED, DEFAULT_CAMERA_SPEED);
+        config.cursorSpeed = prefs.getInt(PREF_CURSOR_SPEED, DEFAULT_CURSOR_SPEED);
         config.invertCameraY = prefs.getBoolean(PREF_INVERT_Y, DEFAULT_INVERT_Y);
         config.moveDeadzone = prefs.getInt(PREF_MOVE_DEADZONE, DEFAULT_MOVE_DEADZONE) / 100f;
         return config;
@@ -103,6 +106,13 @@ public class KbmController implements GamepadKbmMapper.Output {
             ticking = true;
             handler.post(tickRunnable);
         }
+    }
+
+    public synchronized void onScreenMouseButton(int button, boolean down) {
+        if (stopped) {
+            return;
+        }
+        mapper.setMouseButton(button, down);
     }
 
     /** Releases everything held on the host and stops processing input. */

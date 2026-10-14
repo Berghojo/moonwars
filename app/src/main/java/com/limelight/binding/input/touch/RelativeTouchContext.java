@@ -149,8 +149,9 @@ public class RelativeTouchContext implements TouchContext {
     public boolean touchDownEvent(int eventX, int eventY, long eventTime, boolean isNewFinger)
     {
         // Get the view dimensions to scale inputs on this touch
-        xFactor = referenceWidth / (double)targetView.getWidth();
-        yFactor = referenceHeight / (double)targetView.getHeight();
+        double sensitivity = prefConfig.touchMouseSensitivity / 100.0;
+        xFactor = sensitivity * referenceWidth / (double)targetView.getWidth();
+        yFactor = sensitivity * referenceHeight / (double)targetView.getHeight();
 
         originalTouchX = lastTouchX = eventX;
         originalTouchY = lastTouchY = eventY;

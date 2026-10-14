@@ -2865,6 +2865,22 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         sendControllerInputPacket(defaultContext);
     }
 
+    public void reportOscMouseButton(byte button, boolean down) {
+        if (kbmController != null) {
+            kbmController.onScreenMouseButton(button, down);
+        }
+        else if (down) {
+            conn.sendMouseButtonDown(button);
+        }
+        else {
+            conn.sendMouseButtonUp(button);
+        }
+    }
+
+    public void toggleKeyboard() {
+        gestures.toggleKeyboard();
+    }
+
     @Override
     public void reportControllerState(int controllerId, int buttonFlags,
                                       float leftStickX, float leftStickY,

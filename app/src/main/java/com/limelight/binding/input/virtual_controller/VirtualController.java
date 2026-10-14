@@ -198,6 +198,18 @@ public class VirtualController {
         }
     }
 
+    void sendMouseButton(byte button, boolean down) {
+        if (controllerHandler != null) {
+            controllerHandler.reportOscMouseButton(button, down);
+        }
+    }
+
+    void toggleKeyboard() {
+        if (controllerHandler != null) {
+            controllerHandler.toggleKeyboard();
+        }
+    }
+
     void sendControllerInputContext() {
         // Cancel retransmissions of prior gamepad inputs
         handler.removeCallbacks(delayedRetransmitRunnable);
