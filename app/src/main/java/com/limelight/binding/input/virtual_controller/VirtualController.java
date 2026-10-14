@@ -265,6 +265,12 @@ public class VirtualController {
         }
     }
 
+    void showSensitivitySettings() {
+        if (controllerHandler != null) {
+            controllerHandler.showSensitivitySettings();
+        }
+    }
+
     void sendControllerInputContext() {
         // Cancel retransmissions of prior gamepad inputs
         handler.removeCallbacks(delayedRetransmitRunnable);

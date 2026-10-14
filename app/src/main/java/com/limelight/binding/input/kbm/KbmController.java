@@ -121,6 +121,11 @@ public class KbmController implements GamepadKbmMapper.Output {
         mapper.setMouseButton(button, down);
     }
 
+    /** Re-reads sensitivity settings from preferences and applies them immediately. */
+    public void reloadConfig() {
+        mapper.applySensitivity(loadConfig(context));
+    }
+
     public void setLayerListener(LayerListener listener) {
         this.layerListener = listener;
     }

@@ -5,4 +5,7 @@ public interface GameGestures {
 
     // Switches touch input between trackpad mode and direct click mode
     void toggleTouchMode();
+
+    // Opens the in-stream sensitivity settings
+    void showSensitivitySettings();
 }

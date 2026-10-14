@@ -50,6 +50,8 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
   * *Direct click*: a tap clicks exactly where you touch. A long press right-clicks, and dragging
     holds the left button.
   The app remembers your choice for the next stream.
+* **SENS**: opens sensitivity settings without leaving the game: camera and cursor sensitivity,
+  movement deadzone, invert Y, and touch mouse sensitivity. Changes apply immediately and are saved.
 
 L3 and R3 (Tab and F by default) are a double-tap on the left or right stick.
  To move or resize buttons, use the gear icon in the top-left

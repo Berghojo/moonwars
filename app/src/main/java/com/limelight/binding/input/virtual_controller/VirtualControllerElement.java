@@ -42,6 +42,7 @@ public abstract class VirtualControllerElement extends View {
     public static final int EID_TOUCH_MODE = 20;
     public static final int EID_KBM_BAR = 21;
     public static final int EID_KBM_EXTRA = 22;
+    public static final int EID_SENSITIVITY = 23;
 
     protected VirtualController virtualController;
     protected final int elementId;

@@ -246,6 +246,14 @@ public class GamepadKbmMapper {
         }
     }
 
+    /** Applies new sensitivity and deadzone settings while streaming. */
+    public synchronized void applySensitivity(Config newConfig) {
+        config.cameraSpeed = newConfig.cameraSpeed;
+        config.cursorSpeed = newConfig.cursorSpeed;
+        config.invertCameraY = newConfig.invertCameraY;
+        config.moveDeadzone = newConfig.moveDeadzone;
+    }
+
     /** True while the shifted layer (skill bar 6-0) is in use. */
     public synchronized boolean isShiftedLayerActive() {
         return layerShiftHolds > 0 || layerToggled;

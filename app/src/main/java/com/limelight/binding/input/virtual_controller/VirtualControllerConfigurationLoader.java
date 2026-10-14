@@ -269,6 +269,7 @@ public class VirtualControllerConfigurationLoader {
     private static final int KEYBOARD_WIDTH = 14;
     private static final int KEYBOARD_HEIGHT = 7;
     private static final int TOUCH_MODE_X = 51;
+    private static final int SENSITIVITY_X = 67;
 
     // Keyboard/mouse mode only: skill bar swap and an extra skill button (Dragon
     // Trigger for Bladesworn), left of the face buttons
@@ -489,6 +490,19 @@ public class VirtualControllerConfigurationLoader {
                             }
                         }, controller, context),
                 screenScale(TOUCH_MODE_X, height),
+                screenScale(KEYBOARD_Y, height),
+                screenScale(KEYBOARD_WIDTH, height),
+                screenScale(KEYBOARD_HEIGHT, height)
+        );
+
+        controller.addElement(createActionButton(VirtualControllerElement.EID_SENSITIVITY, "SENS",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                controller.showSensitivitySettings();
+                            }
+                        }, controller, context),
+                screenScale(SENSITIVITY_X, height),
                 screenScale(KEYBOARD_Y, height),
                 screenScale(KEYBOARD_WIDTH, height),
                 screenScale(KEYBOARD_HEIGHT, height)

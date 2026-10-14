@@ -13,6 +13,7 @@ import com.limelight.binding.input.driver.UsbDriverService;
 import com.limelight.binding.input.evdev.EvdevListener;
 import com.limelight.binding.input.touch.TouchContext;
 import com.limelight.binding.input.kbm.KbmController;
+import com.limelight.ui.SensitivityDialog;
 import com.limelight.binding.input.virtual_controller.VirtualController;
 import com.limelight.binding.video.CrashListener;
 import com.limelight.binding.video.MediaCodecDecoderRenderer;
@@ -1505,6 +1506,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         streamView, prefConfig);
             }
         }
+    }
+
+    @Override
+    public void showSensitivitySettings() {
+        SensitivityDialog.show(this, prefConfig, controllerHandler.getKbmController());
     }
 
     @Override
