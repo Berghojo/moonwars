@@ -292,6 +292,11 @@ public class VirtualControllerConfigurationLoader {
 
         int height = screen.heightPixels;
 
+        // In keyboard/mouse mode, touching the stream turns the camera (drag), clicks (tap)
+        // and zooms (two fingers), so the right stick, mouse buttons, touch mode button,
+        // guide (camera/cursor toggle) and LB (zoom) are left out of the default layout
+        final boolean kbm = controller.getKbmController() != null;
+
         // NOTE: Some of these getPercent() expressions seem like they can be combined
         // into a single call. Due to floating point rounding, this isn't actually possible.
 
@@ -360,14 +365,16 @@ public class VirtualControllerConfigurationLoader {
                     screenScale(TRIGGER_HEIGHT, height)
             );
 
-            controller.addElement(createDigitalButton(
-                    VirtualControllerElement.EID_LB,
-                    ControllerPacket.LB_FLAG, 0, 1, "LB", -1, controller, context),
-                    screenScale(TRIGGER_L_BASE_X + TRIGGER_DISTANCE, height),
-                    screenScale(TRIGGER_BASE_Y, height),
-                    screenScale(TRIGGER_WIDTH, height),
-                    screenScale(TRIGGER_HEIGHT, height)
-            );
+            if (!kbm) {
+                controller.addElement(createDigitalButton(
+                        VirtualControllerElement.EID_LB,
+                        ControllerPacket.LB_FLAG, 0, 1, "LB", -1, controller, context),
+                        screenScale(TRIGGER_L_BASE_X + TRIGGER_DISTANCE, height),
+                        screenScale(TRIGGER_BASE_Y, height),
+                        screenScale(TRIGGER_WIDTH, height),
+                        screenScale(TRIGGER_HEIGHT, height)
+                );
+            }
 
             controller.addElement(createDigitalButton(
                     VirtualControllerElement.EID_RB,
@@ -385,12 +392,14 @@ public class VirtualControllerConfigurationLoader {
                     screenScale(ANALOG_SIZE, height)
             );
 
-            controller.addElement(createRightStick(controller, context),
-                    screenScale(ANALOG_R_BASE_X, height) + rightDisplacement,
-                    screenScale(ANALOG_R_BASE_Y, height),
-                    screenScale(ANALOG_SIZE, height),
-                    screenScale(ANALOG_SIZE, height)
-            );
+            if (!kbm) {
+                controller.addElement(createRightStick(controller, context),
+                        screenScale(ANALOG_R_BASE_X, height) + rightDisplacement,
+                        screenScale(ANALOG_R_BASE_Y, height),
+                        screenScale(ANALOG_SIZE, height),
+                        screenScale(ANALOG_SIZE, height)
+                );
+            }
 
             controller.addElement(createDigitalButton(
                     VirtualControllerElement.EID_BACK,
@@ -430,7 +439,7 @@ public class VirtualControllerConfigurationLoader {
             );
         }
 
-        if(config.showGuideButton){
+        if (config.showGuideButton && !kbm) {
             controller.addElement(createDigitalButton(VirtualControllerElement.EID_GDB,
                             ControllerPacket.SPECIAL_BUTTON_FLAG, 0, 1, "GUIDE", -1, controller, context),
                     screenScale(GUIDE_X, height)+ rightDisplacement,
@@ -440,21 +449,23 @@ public class VirtualControllerConfigurationLoader {
             );
         }
 
-        controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_LEFT,
-                        MouseButtonPacket.BUTTON_LEFT, "LMB", R.drawable.ic_osc_mouse_left, controller, context),
-                screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
-                screenScale(MOUSE_LEFT_Y, height),
-                screenScale(MOUSE_BUTTON_WIDTH, height),
-                screenScale(MOUSE_BUTTON_HEIGHT, height)
-        );
+        if (!kbm) {
+            controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_LEFT,
+                            MouseButtonPacket.BUTTON_LEFT, "LMB", R.drawable.ic_osc_mouse_left, controller, context),
+                    screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
+                    screenScale(MOUSE_LEFT_Y, height),
+                    screenScale(MOUSE_BUTTON_WIDTH, height),
+                    screenScale(MOUSE_BUTTON_HEIGHT, height)
+            );
 
-        controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_RIGHT,
-                        MouseButtonPacket.BUTTON_RIGHT, "RMB", R.drawable.ic_osc_mouse_right, controller, context),
-                screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
-                screenScale(MOUSE_RIGHT_Y, height),
-                screenScale(MOUSE_BUTTON_WIDTH, height),
-                screenScale(MOUSE_BUTTON_HEIGHT, height)
-        );
+            controller.addElement(createMouseButton(VirtualControllerElement.EID_MOUSE_RIGHT,
+                            MouseButtonPacket.BUTTON_RIGHT, "RMB", R.drawable.ic_osc_mouse_right, controller, context),
+                    screenScale(MOUSE_BUTTON_X, height) + rightDisplacement,
+                    screenScale(MOUSE_RIGHT_Y, height),
+                    screenScale(MOUSE_BUTTON_WIDTH, height),
+                    screenScale(MOUSE_BUTTON_HEIGHT, height)
+            );
+        }
 
         controller.addElement(createActionButton(VirtualControllerElement.EID_KEYBOARD, "KEYBOARD", R.drawable.ic_osc_keyboard,
                         new Runnable() {
@@ -487,18 +498,20 @@ public class VirtualControllerConfigurationLoader {
             );
         }
 
-        controller.addElement(createActionButton(VirtualControllerElement.EID_TOUCH_MODE, "TOUCH", R.drawable.ic_osc_touch,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                controller.toggleTouchMode();
-                            }
-                        }, controller, context),
-                screenScale(TOUCH_MODE_X, height),
-                screenScale(KEYBOARD_Y, height),
-                screenScale(KEYBOARD_WIDTH, height),
-                screenScale(KEYBOARD_HEIGHT, height)
-        );
+        if (!kbm) {
+            controller.addElement(createActionButton(VirtualControllerElement.EID_TOUCH_MODE, "TOUCH", R.drawable.ic_osc_touch,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    controller.toggleTouchMode();
+                                }
+                            }, controller, context),
+                    screenScale(TOUCH_MODE_X, height),
+                    screenScale(KEYBOARD_Y, height),
+                    screenScale(KEYBOARD_WIDTH, height),
+                    screenScale(KEYBOARD_HEIGHT, height)
+            );
+        }
 
         controller.addElement(createActionButton(VirtualControllerElement.EID_SENSITIVITY, "SENS", R.drawable.ic_osc_tune,
                         new Runnable() {
@@ -507,7 +520,7 @@ public class VirtualControllerConfigurationLoader {
                                 controller.showSensitivitySettings();
                             }
                         }, controller, context),
-                screenScale(SENSITIVITY_X, height),
+                screenScale(kbm ? TOUCH_MODE_X : SENSITIVITY_X, height),
                 screenScale(KEYBOARD_Y, height),
                 screenScale(KEYBOARD_WIDTH, height),
                 screenScale(KEYBOARD_HEIGHT, height)
@@ -522,7 +535,7 @@ public class VirtualControllerConfigurationLoader {
                     }
                 }, controller, context);
         controller.addElement(visibilityButton,
-                screenScale(VISIBILITY_X, height),
+                screenScale(kbm ? SENSITIVITY_X : VISIBILITY_X, height),
                 screenScale(KEYBOARD_Y, height),
                 screenScale(KEYBOARD_WIDTH, height),
                 screenScale(KEYBOARD_HEIGHT, height)

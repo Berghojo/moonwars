@@ -42,21 +42,22 @@ Open **Settings → Gamepad to Keyboard & Mouse**:
 
 The on-screen controller is enabled by default. Next to the gamepad buttons, it adds:
 
-Next to the gamepad buttons, it adds icon buttons. All controls have white outlines on a dark
-backdrop, so they stay readable over the game.
+**Touching the stream** (anywhere outside the buttons):
 
-* **Left / right mouse icons**: left and right mouse buttons. Hold them to drag.
+* **Tap**: left click exactly where you touched (NPCs, loot, UI, menus).
+* **Drag one finger**: holds the right mouse button and turns the camera, like right-click dragging
+  in GW2.
+* **Drag two fingers up / down**: zoom in / out (mouse wheel), like GeForce NOW.
+
+Because touch handles the camera and clicks, keyboard/mouse mode leaves the right stick, the mouse
+buttons, Guide and LB out of the on-screen layout. All controls have white outlines on a dark
+backdrop, so they stay readable over the game. Next to the gamepad buttons, there are icon buttons:
+
 * **Keyboard icon**: opens Android's keyboard so you can type to the PC, e.g. in chat. Tap it again to
   close it. A three-finger tap on the stream does the same.
-* **Hand icon (touch mode)**: switches what touching the stream (outside the buttons) does:
-  * *Camera* (default): dragging one finger holds the right mouse button and turns the camera, like
-    right-click dragging in GW2. A quick tap is a right click. **Dragging two fingers up or down zooms
-    in or out** (mouse wheel), like GeForce NOW.
-  * *Direct click*: a tap clicks exactly where you touch. A long press right-clicks, and dragging
-    holds the left button.
-  The app remembers your choice for the next stream.
-* **Sliders icon**: opens sensitivity settings without leaving the game: camera and cursor sensitivity,
-  movement deadzone, invert Y, and touch camera sensitivity. Changes apply immediately and are saved.
+* **Sliders icon**: opens sensitivity settings without leaving the game: touch camera sensitivity,
+  movement deadzone, and settings for a physical controller's right stick. Changes apply immediately
+  and are saved.
 * **Eye icon**: hides every other control, so you can click something underneath them. Tap it again to
   bring them back.
 
@@ -80,10 +81,12 @@ Each on-screen button shows the key it currently sends, and the labels change wh
 | **F1** (on-screen extra button) | `F1` Dragon Trigger | (same) |
 | LT / RT | `V` dodge / `Space` jump | (same) |
 | D-pad ↑ → ↓ ← | `F2` gunsaber, `F3`, `F` interact, `Tab` next target | (same) |
-| LB / L3 (double-tap left stick) | Zoom in / zoom out | (same) |
 | Start / Back | `Esc` / `M` map | `Esc` / `I` inventory |
-| Guide | Toggle camera / cursor mode | |
-| Left stick / right stick | W A S D / camera | (same) |
+| Left stick | W A S D | (same) |
+| Touch | tap = left click, drag = camera, 2 fingers = zoom | (same) |
+
+On a physical controller, the right stick turns the camera, LB / L3 zoom in / out, and Guide toggles
+the right stick between camera and cursor.
 
 Holding a button holds the key on the PC, so charged skills charge while held and fire on release.
 If you swap bars while holding a skill, that skill is still released correctly.

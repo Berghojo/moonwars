@@ -1537,7 +1537,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 .apply();
 
         Toast.makeText(this, prefConfig.touchCameraDrag ?
-                "Touch: camera (drag turns the camera, tap right-clicks, 2 fingers zoom)" :
+                "Touch: tap clicks, drag turns the camera, 2 fingers zoom" :
                 "Touch: direct click (tap clicks where you touch, long press right-clicks)",
                 Toast.LENGTH_SHORT).show();
     }

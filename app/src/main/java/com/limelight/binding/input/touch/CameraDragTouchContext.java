@@ -15,7 +15,7 @@ import com.limelight.preferences.PreferenceConfiguration;
  * <ul>
  *   <li>Dragging one finger holds the right mouse button and moves the mouse,
  *       so the camera turns with the finger.</li>
- *   <li>A quick tap is a right click.</li>
+ *   <li>A quick tap moves the cursor to the finger and left clicks there.</li>
  *   <li>Dragging two fingers up or down scrolls the mouse wheel (zoom).</li>
  * </ul>
  * Only the first finger drives the camera; the second finger just switches the
@@ -26,7 +26,7 @@ public class CameraDragTouchContext implements TouchContext {
     private static final float DRAG_SLOP_DP = 8;
     // Longest touch that still counts as a tap (right click)
     private static final long TAP_TIME_MS = 300;
-    // How long the right button stays down for a tap
+    // How long the left button stays down for a tap
     private static final long TAP_CLICK_MS = 50;
     // Two-finger drag distance per mouse wheel notch, as a fraction of the view height
     private static final float ZOOM_STEP_FRACTION = 0.04f;
@@ -52,11 +52,16 @@ public class CameraDragTouchContext implements TouchContext {
     // Set once a second finger lands; stays set until every finger is lifted
     private boolean zooming;
     private boolean cancelled;
+    // Left button is down for a tap click and waiting for tapReleaseRunnable
+    private boolean tapButtonDown;
 
     private final Runnable tapReleaseRunnable = new Runnable() {
         @Override
         public void run() {
-            controllerHandler.reportOscMouseButton(MouseButtonPacket.BUTTON_RIGHT, false);
+            if (tapButtonDown) {
+                tapButtonDown = false;
+                controllerHandler.reportOscMouseButton(MouseButtonPacket.BUTTON_LEFT, false);
+            }
         }
     };
 
@@ -178,9 +183,16 @@ public class CameraDragTouchContext implements TouchContext {
         }
         else if (!zooming && eventTime - downTime <= TAP_TIME_MS &&
                 Math.hypot(eventX - downX, eventY - downY) < dragSlopPx) {
-            // Quick tap: right click
+            // Quick tap: left click where the finger touched
+            // Finish any previous click first so double taps are two full clicks
             handler.removeCallbacks(tapReleaseRunnable);
-            controllerHandler.reportOscMouseButton(MouseButtonPacket.BUTTON_RIGHT, true);
+            tapReleaseRunnable.run();
+            int x = Math.max(0, Math.min(downX, targetView.getWidth()));
+            int y = Math.max(0, Math.min(downY, targetView.getHeight()));
+            conn.sendMousePosition((short) x, (short) y,
+                    (short) targetView.getWidth(), (short) targetView.getHeight());
+            tapButtonDown = true;
+            controllerHandler.reportOscMouseButton(MouseButtonPacket.BUTTON_LEFT, true);
             handler.postDelayed(tapReleaseRunnable, TAP_CLICK_MS);
         }
     }
