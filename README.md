@@ -1,3 +1,116 @@
+# Moonwars
+
+**Moonwars** is a fork of [Moonlight for Android](https://github.com/moonlight-stream/moonlight-android)
+built for playing **Guild Wars 2** (or any mouse-and-keyboard game) from an Android phone or tablet.
+It streams your PC with Moonlight as usual. It also adds a **Gamepad → Keyboard & Mouse** mode that turns the on-screen
+controller, or a physical controller, into keyboard and mouse input:
+
+| Controller | Sent to the PC |
+|---|---|
+| Left stick | `W` `A` `S` `D` (8-way, diagonals press two keys) |
+| Right stick | Mouse movement while **holding the right mouse button**, so the GW2 camera turns |
+| Buttons / triggers / D-pad | Any key, mouse button or mouse wheel (configurable, two layers) |
+
+The host only sees a keyboard and mouse. No virtual Xbox controller is created.
+
+## Install
+
+1. Download `Moonwars-*.apk` from the [Releases](../../releases) page, or from the **Build APK**
+   workflow run's artifacts under the **Actions** tab.
+2. Sideload it on your phone. You may need to allow "install unknown apps".
+   Moonwars has its own app ID, so it installs alongside the official Moonlight app.
+3. On your PC, run [Sunshine](https://github.com/LizardByte/Sunshine) (recommended) or GeForce Experience,
+   then pair Moonwars with it the same way you would pair Moonlight.
+
+## Settings
+
+Open **Settings → Gamepad to Keyboard & Mouse**:
+
+* **Map controller to keyboard & mouse**: on by default. Turn it off to get normal Moonlight gamepad behavior.
+* **Button bindings**: choose what every button sends. There are two columns:
+  * *Normal*: the binding used normally.
+  * *With layer shift*: used while a button bound to **Layer shift** is held (LB by default).
+    If this is set to *None*, the normal binding is used.
+* **Hold right mouse button for camera**: on by default, which GW2 needs. Turn it off if you use GW2's
+  *Action Camera*, or want the right stick to move the mouse cursor. The **Guide** button switches between
+  the two modes while you play.
+* **Camera speed**, **Invert camera Y axis**, **Movement stick deadzone**.
+
+The on-screen controller is enabled by default. To move or resize buttons, use the gear icon in the top-left
+of the stream; this is the standard Moonlight on-screen controller editor. Touching the stream outside the
+controls still works as a mouse, which is handy for clicking UI, loot and dialogs.
+
+## Default bindings (Guild Wars 2)
+
+| Input | Normal | With LB held |
+|---|---|---|
+| Left stick | W / A / S / D | (same) |
+| Right stick | Camera (mouse + right button) | (same) |
+| A / B / X / Y | `1` / `2` / `3` / `4` (weapon skills) | `6` / `7` / `8` / `9` (heal + utilities) |
+| RB | `5` | `0` (elite) |
+| LB | Layer shift | |
+| LT | `V` (dodge) | |
+| RT | `Space` (jump) | |
+| D-pad ↑ → ↓ ← | `F1` `F2` `F3` `F4` (profession skills) | ↑ `F5`, → `` ` `` (weapon swap), ↓ wheel down (zoom out), ← wheel up (zoom in) |
+| L3 | `Tab` (next target) | |
+| R3 | `F` (interact) | |
+| Start | `Esc` | |
+| Back / Select | `M` (map) | `I` (inventory) |
+| Guide | Toggle camera / cursor mode | |
+
+These match GW2's default keybinds. If you changed your in-game keybinds, change the bindings in the app to match.
+
+> **Tip:** In GW2's default keybinds, `A`/`D` *turn* the character and `Q`/`E` *strafe*. While the camera
+> stick is in use, the right mouse button is held, and then `A`/`D` strafe as well. If you prefer
+> always strafing, bind *Left stick left/right* to `Q`/`E`.
+
+## Building
+
+GitHub Actions builds every push (`.github/workflows/build.yml`). Pushing a tag like `v1.0.0` also publishes
+a GitHub release with the APK attached.
+
+Release APKs are signed with a throwaway debug key unless you add these repository secrets.
+If you plan to install updates over an existing install, add them, so every build uses the same key:
+
+| Secret | Value |
+|---|---|
+| `MOONWARS_KEYSTORE_BASE64` | `base64 -w0 my.jks` |
+| `MOONWARS_KEYSTORE_PASSWORD` | keystore password |
+| `MOONWARS_KEY_ALIAS` | key alias |
+| `MOONWARS_KEY_PASSWORD` | key password |
+
+You can create a keystore with:
+`keytool -genkeypair -v -keystore my.jks -alias moonwars -keyalg RSA -keysize 4096 -validity 10000`
+
+To build locally, you need Android Studio (or the Android SDK) and the NDK:
+
+```sh
+git submodule update --init --recursive
+./gradlew assembleNonRootRelease          # APK in app/build/outputs/apk/nonRoot/release/
+./gradlew testNonRootDebugUnitTest        # unit tests for the keyboard/mouse mapper
+```
+
+The mapping code is in `app/src/main/java/com/limelight/binding/input/kbm/`.
+
+## Updating from upstream Moonlight
+
+This repository keeps Moonlight's full git history, so upstream updates can be merged:
+
+```sh
+git remote add upstream https://github.com/moonlight-stream/moonlight-android.git
+git fetch upstream && git merge upstream/master
+```
+
+## License
+
+Moonwars, like Moonlight, is licensed under the GPLv3 (see `LICENSE.txt`).
+It is not affiliated with the Moonlight project, NVIDIA, or ArenaNet.
+Guild Wars 2 is a trademark of ArenaNet.
+
+---
+
+*The original Moonlight README follows.*
+
 # Moonlight Android
 
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/232a8tadrrn8jv0k/branch/master?svg=true)](https://ci.appveyor.com/project/cgutman/moonlight-android/branch/master)
