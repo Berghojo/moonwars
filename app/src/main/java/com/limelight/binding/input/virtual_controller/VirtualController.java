@@ -73,11 +73,19 @@ public class VirtualController {
     private VirtualControllerElement visibilityToggle;
     private boolean overlayHidden;
 
+    // Utility buttons that fold away to the screen edge behind a small arrow tab
+    private static final String PREF_TRAY_COLLAPSED = "kbm_tray_collapsed";
+    private final List<VirtualControllerElement> trayElements = new ArrayList<>();
+    private DigitalButton trayToggle;
+    private boolean trayCollapsed;
+
     public VirtualController(final ControllerHandler controllerHandler, FrameLayout layout, final Context context) {
         this.controllerHandler = controllerHandler;
         this.frame_layout = layout;
         this.context = context;
         this.handler = new Handler(Looper.getMainLooper());
+        this.trayCollapsed = android.preference.PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(PREF_TRAY_COLLAPSED, false);
 
         buttonConfigure = new Button(context);
         buttonConfigure.setAlpha(0.25f);
@@ -142,20 +150,51 @@ public class VirtualController {
         applyOverlayVisibility();
     }
 
+    void addTrayElement(VirtualControllerElement element) {
+        trayElements.add(element);
+    }
+
+    void setTrayToggle(DigitalButton toggle) {
+        trayToggle = toggle;
+    }
+
+    void toggleTray() {
+        trayCollapsed = !trayCollapsed;
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putBoolean(PREF_TRAY_COLLAPSED, trayCollapsed)
+                .apply();
+        applyOverlayVisibility();
+    }
+
     private void applyOverlayVisibility() {
-        if (visibilityToggle == null) {
+        if (visibilityToggle == null && trayToggle == null) {
             return;
         }
 
-        int visibility = overlayHidden ? View.INVISIBLE : View.VISIBLE;
         for (VirtualControllerElement element : elements) {
-            if (element != visibilityToggle) {
-                element.setVisibility(visibility);
+            boolean visible;
+            if (element == trayToggle) {
+                // The tray tab is always reachable at the screen edge
+                visible = true;
             }
+            else if (trayCollapsed && trayElements.contains(element)) {
+                visible = false;
+            }
+            else {
+                // The eye button stays visible so hidden controls can be brought back
+                visible = element == visibilityToggle || !overlayHidden;
+            }
+            element.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
-        buttonConfigure.setVisibility(visibility);
-        // Dim the eye button while everything else is hidden
-        visibilityToggle.setAlpha(overlayHidden ? 0.5f : 1f);
+        buttonConfigure.setVisibility(overlayHidden ? View.INVISIBLE : View.VISIBLE);
+
+        if (visibilityToggle != null) {
+            // Dim the eye button while everything else is hidden
+            visibilityToggle.setAlpha(overlayHidden ? 0.5f : 1f);
+        }
+        if (trayToggle != null) {
+            trayToggle.setText(trayCollapsed ? "\u203A" : "\u2039");
+        }
     }
 
     public void removeElements() {
@@ -166,6 +205,8 @@ public class VirtualController {
         boundButtons.clear();
         defaultLabels.clear();
         visibilityToggle = null;
+        trayElements.clear();
+        trayToggle = null;
 
         frame_layout.removeView(buttonConfigure);
     }
@@ -246,7 +287,7 @@ public class VirtualController {
             KbmAction action = bindings.resolve(entry.getValue(), shiftedLayerActive);
             String label = action.shortLabel();
             if (action.type == KbmAction.Type.LAYER_TOGGLE) {
-                label = shiftedLayerActive ? "BAR 2" : "BAR 1";
+                label = shiftedLayerActive ? "6-0" : "1-5";
             }
             entry.getKey().setText(label != null ? label : defaultLabels.get(entry.getKey()));
         }

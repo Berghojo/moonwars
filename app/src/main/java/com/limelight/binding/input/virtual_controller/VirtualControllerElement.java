@@ -44,6 +44,12 @@ public abstract class VirtualControllerElement extends View {
     public static final int EID_KBM_EXTRA = 22;
     public static final int EID_SENSITIVITY = 23;
     public static final int EID_VISIBILITY = 24;
+    // Keyboard/mouse HUD: the D-pad as separate buttons, and the fold-away tray tab
+    public static final int EID_KBM_DPAD_UP = 25;
+    public static final int EID_KBM_DPAD_RIGHT = 26;
+    public static final int EID_KBM_DPAD_DOWN = 27;
+    public static final int EID_KBM_DPAD_LEFT = 28;
+    public static final int EID_TRAY = 29;
 
     protected VirtualController virtualController;
     protected final int elementId;

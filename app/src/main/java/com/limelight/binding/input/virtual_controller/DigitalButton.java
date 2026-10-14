@@ -43,6 +43,8 @@ public class DigitalButton extends VirtualControllerElement {
 
     private List<DigitalButtonListener> listeners = new ArrayList<>();
     private String text = "";
+    // Rounded square instead of an oval, for skill bar slots
+    private boolean square;
     private int icon = -1;
     private long timerLongClickTimeout = 3000;
     private final Runnable longClickRunnable = new Runnable() {
@@ -128,6 +130,11 @@ public class DigitalButton extends VirtualControllerElement {
         invalidate();
     }
 
+    public void setSquare(boolean square) {
+        this.square = square;
+        invalidate();
+    }
+
     public void setIcon(int id) {
         this.icon = id;
         invalidate();
@@ -151,14 +158,26 @@ public class DigitalButton extends VirtualControllerElement {
         rect.right = getWidth() - rect.left;
         rect.bottom = getHeight() - rect.top;
 
+        float corner = Math.min(getWidth(), getHeight()) * 0.18f;
+
         // Dark backdrop (tinted when pressed) for contrast against the video
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(isPressed() ? (pressedColor & 0x00FFFFFF) | 0x80000000 : backdropColor);
-        canvas.drawOval(rect, paint);
+        if (square) {
+            canvas.drawRoundRect(rect, corner, corner, paint);
+        }
+        else {
+            canvas.drawOval(rect, paint);
+        }
 
         paint.setColor(isPressed() ? pressedColor : getDefaultColor());
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawOval(rect, paint);
+        if (square) {
+            canvas.drawRoundRect(rect, corner, corner, paint);
+        }
+        else {
+            canvas.drawOval(rect, paint);
+        }
 
         if (icon != -1) {
             Drawable d = getResources().getDrawable(icon).mutate();

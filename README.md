@@ -49,9 +49,20 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
   in GW2.
 * **Drag two fingers up / down**: zoom in / out (mouse wheel), like GeForce NOW.
 
-Because touch handles the camera and clicks, keyboard/mouse mode leaves the right stick, the mouse
-buttons, Guide and LB out of the on-screen layout. All controls have white outlines on a dark
-backdrop, so they stay readable over the game. Next to the gamepad buttons, there are icon buttons:
+**On-screen layout (keyboard/mouse mode)** is styled after Guild Wars 2's own HUD:
+
+* **Move stick**: bottom left.
+* **Skill bar**: bottom center. The `1-5` / `6-0` slot on its left swaps the bar, and the five square
+  slots are the skills. **F1 / F2 / F3** sit above it like GW2's profession bar.
+* **Dodge (V), jump (Space), interact (F), target (Tab)**: separate round buttons around the bottom
+  right corner, under your right thumb.
+* **Tray** along the top: keyboard, sensitivity, hide-all (eye), Esc and Map (Inventory on bar 2).
+  The small arrow tab at its left end folds the tray away to the edge and back. The app remembers
+  whether it's folded.
+
+Every on-screen button shows the key it sends. All controls have white outlines on a dark backdrop,
+so they stay readable over the game. Use the gear icon (top left) to move or resize anything. This
+layout is saved separately from the gamepad layout. The tray buttons:
 
 * **Keyboard icon**: opens Android's keyboard so you can type to the PC, e.g. in chat. Tap it again to
   close it. A three-finger tap on the stream does the same.
@@ -61,7 +72,7 @@ backdrop, so they stay readable over the game. Next to the gamepad buttons, ther
 * **Eye icon**: hides every other control, so you can click something underneath them. Tap it again to
   bring them back.
 
-L3 and R3 (Tab and F by default) are a double-tap on the left or right stick.
+Double-tapping the move stick presses L3 (zoom out in the Bladesworn preset).
  To move or resize buttons, use the gear icon in the top-left
 of the stream; this is the standard Moonlight on-screen controller editor. By default, dragging on the stream
 outside the controls turns the camera. Switch to direct click with the touch mode button to click
@@ -80,7 +91,7 @@ Each on-screen button shows the key it currently sends, and the labels change wh
 | **BAR** (on-screen) | Swap to bar 2 | Swap to bar 1 |
 | **F1** (on-screen extra button) | `F1` Dragon Trigger | (same) |
 | LT / RT | `V` dodge / `Space` jump | (same) |
-| D-pad ↑ → ↓ ← | `F2` gunsaber, `F3`, `F` interact, `Tab` next target | (same) |
+| D-pad ↑ → ↓ ← (on screen: F2, F3, interact, target buttons) | `F2` gunsaber, `F3`, `F` interact, `Tab` next target | (same) |
 | Start / Back | `Esc` / `M` map | `Esc` / `I` inventory |
 | Left stick | W A S D | (same) |
 | Touch | tap = left click, drag = camera, 2 fingers = zoom | (same) |
