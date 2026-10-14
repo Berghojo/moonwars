@@ -12,6 +12,7 @@ import com.limelight.binding.input.touch.RelativeTouchContext;
 import com.limelight.binding.input.driver.UsbDriverService;
 import com.limelight.binding.input.evdev.EvdevListener;
 import com.limelight.binding.input.touch.TouchContext;
+import com.limelight.binding.input.kbm.KbmController;
 import com.limelight.binding.input.virtual_controller.VirtualController;
 import com.limelight.binding.video.CrashListener;
 import com.limelight.binding.video.MediaCodecDecoderRenderer;
@@ -434,6 +435,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (prefConfig.onscreenController) {
             // If we're using OSC, always set at least gamepad 1.
             gamepadMask |= 1;
+        }
+        if (KbmController.isEnabled(this)) {
+            // Gamepad input is translated to keyboard and mouse, so don't
+            // create any virtual gamepads on the host
+            gamepadMask = 0;
         }
 
         // Set to the optimal mode for streaming

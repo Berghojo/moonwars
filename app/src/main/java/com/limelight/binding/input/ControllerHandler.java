@@ -39,6 +39,7 @@ import com.limelight.R;
 import com.limelight.binding.input.driver.AbstractController;
 import com.limelight.binding.input.driver.UsbDriverListener;
 import com.limelight.binding.input.driver.UsbDriverService;
+import com.limelight.binding.input.kbm.KbmController;
 import com.limelight.nvstream.NvConnection;
 import com.limelight.nvstream.input.ControllerPacket;
 import com.limelight.nvstream.input.MouseButtonPacket;
@@ -130,6 +131,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private final PreferenceConfiguration prefConfig;
     private short currentControllers, initialControllers;
 
+    private final KbmController kbmController;
+
     public ControllerHandler(Activity activityContext, NvConnection conn, GameGestures gestures, PreferenceConfiguration prefConfig) {
         this.activityContext = activityContext;
         this.conn = conn;
@@ -148,6 +151,10 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         this.deviceSensorManager = (SensorManager) activityContext.getSystemService(Context.SENSOR_SERVICE);
         this.inputManager = (InputManager) activityContext.getSystemService(Context.INPUT_SERVICE);
         this.mainThreadHandler = new Handler(Looper.getMainLooper());
+
+        // In gamepad-to-keyboard/mouse mode, gamepad input is translated into keyboard
+        // and mouse input and the host never sees a gamepad
+        this.kbmController = KbmController.isEnabled(activityContext) ? new KbmController(activityContext, conn) : null;
 
         // Create a HandlerThread to process battery state updates. These can be slow enough
         // that they lead to ANRs if we do them on the main thread.
@@ -275,6 +282,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
         // Stop new device contexts from being created or used
         stopped = true;
+
+        // Don't leave any keys or mouse buttons stuck down on the host
+        if (kbmController != null) {
+            kbmController.stop();
+        }
 
         // Unregister our input device callbacks
         inputManager.unregisterInputDeviceListener(this);
@@ -418,7 +430,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         // If this device sent data as a gamepad, zero the values before removing.
         // We must do this after clearing the currentControllers entry so this
         // causes the device to be removed on the server PC.
-        if (context.assignedControllerNumber) {
+        if (context.assignedControllerNumber && kbmController == null) {
             conn.sendControllerInput(context.controllerNumber, getActiveControllerMask(),
                     (short) 0,
                     (byte) 0, (byte) 0,
@@ -562,7 +574,9 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         context.assignedControllerNumber = true;
 
         // Report attributes of this new controller to the host
-        context.sendControllerArrival();
+        if (kbmController == null) {
+            context.sendControllerArrival();
+        }
     }
 
     private UsbDeviceContext createUsbDeviceContextForDevice(AbstractController device) {
@@ -1257,6 +1271,15 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             leftStickY |= maxByMagnitude(leftStickY, defaultContext.leftStickY);
             rightStickX |= maxByMagnitude(rightStickX, defaultContext.rightStickX);
             rightStickY |= maxByMagnitude(rightStickY, defaultContext.rightStickY);
+        }
+
+        if (kbmController != null) {
+            // Player 1 (which includes the on-screen controller) drives the keyboard and mouse
+            if (controllerNumber == 0) {
+                kbmController.onGamepadState(inputMap, leftStickX, leftStickY,
+                        rightStickX, rightStickY, leftTrigger, rightTrigger);
+            }
+            return;
         }
 
         if (originalContext.mouseEmulationActive) {
@@ -2368,7 +2391,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             // any action.
             if ((context.inputMap & ControllerPacket.PLAY_FLAG) != 0 &&
                     event.getEventTime() - context.startDownTime > ControllerHandler.START_DOWN_TIME_MOUSE_MODE_MS &&
-                    prefConfig.mouseEmulation) {
+                    prefConfig.mouseEmulation && kbmController == null) {
                 context.toggleMouseEmulation();
             }
             context.inputMap &= ~ControllerPacket.PLAY_FLAG;

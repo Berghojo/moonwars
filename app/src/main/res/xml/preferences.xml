@@ -145,10 +145,57 @@
             android:summary="@string/summary_checkbox_absolute_mouse_mode"
             android:defaultValue="false" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/category_kbm_settings"
+        android:key="category_kbm_settings">
+        <CheckBoxPreference
+            android:key="checkbox_gamepad_kbm"
+            android:title="@string/title_checkbox_gamepad_kbm"
+            android:summary="@string/summary_checkbox_gamepad_kbm"
+            android:defaultValue="true" />
+        <Preference
+            android:key="kbm_bindings"
+            android:dependency="checkbox_gamepad_kbm"
+            android:title="@string/title_kbm_bindings"
+            android:summary="@string/summary_kbm_bindings" />
+        <CheckBoxPreference
+            android:key="checkbox_kbm_camera_hold_rmb"
+            android:dependency="checkbox_gamepad_kbm"
+            android:title="@string/title_checkbox_kbm_camera_hold_rmb"
+            android:summary="@string/summary_checkbox_kbm_camera_hold_rmb"
+            android:defaultValue="true" />
+        <com.limelight.preferences.SeekBarPreference
+            android:key="seekbar_kbm_camera_speed"
+            android:dependency="checkbox_gamepad_kbm"
+            android:dialogMessage="@string/summary_kbm_camera_speed"
+            seekbar:min="100"
+            seekbar:step="50"
+            android:max="5000"
+            android:defaultValue="1500"
+            android:summary="@string/summary_kbm_camera_speed"
+            android:text="@string/suffix_kbm_camera_speed"
+            android:title="@string/title_kbm_camera_speed" />
+        <CheckBoxPreference
+            android:key="checkbox_kbm_invert_y"
+            android:dependency="checkbox_gamepad_kbm"
+            android:title="@string/title_checkbox_kbm_invert_y"
+            android:summary="@string/summary_checkbox_kbm_invert_y"
+            android:defaultValue="false" />
+        <com.limelight.preferences.SeekBarPreference
+            android:key="seekbar_kbm_move_deadzone"
+            android:dependency="checkbox_gamepad_kbm"
+            android:dialogMessage="@string/summary_kbm_move_deadzone"
+            seekbar:min="5"
+            seekbar:step="1"
+            android:max="90"
+            android:defaultValue="30"
+            android:summary="@string/summary_kbm_move_deadzone"
+            android:text="@string/suffix_kbm_percent"
+            android:title="@string/title_kbm_move_deadzone" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_on_screen_controls_settings"
         android:key="category_onscreen_controls">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="checkbox_show_onscreen_controls"
             android:summary="@string/summary_checkbox_show_onscreen_controls"
             android:title="@string/title_checkbox_show_onscreen_controls" />
