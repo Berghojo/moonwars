@@ -140,8 +140,8 @@ public class DigitalButton extends VirtualControllerElement {
 
         // Size text to fit both the width and height of the button
         float textSize = Math.min(getPercent(getWidth(), 25), getPercent(getHeight(), 42));
-        if (text.length() > 4) {
-            textSize = Math.min(textSize, getWidth() * 1.4f / text.length());
+        if (text.length() > 3) {
+            textSize = Math.min(textSize, getWidth() * 1.1f / text.length());
         }
         paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
