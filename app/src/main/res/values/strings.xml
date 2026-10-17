@@ -215,6 +215,8 @@
     <string name="summary_kbm_cursor_speed">Mouse speed when the right stick moves the cursor (after pressing Guide), at full deflection</string>
     <string name="title_touch_mouse_sensitivity">Touch sensitivity</string>
     <string name="summary_touch_mouse_sensitivity">How fast the camera turns when you drag a finger on the screen</string>
+    <string name="title_checkbox_pinch_screen_zoom">Pinch to zoom the screen</string>
+    <string name="summary_checkbox_pinch_screen_zoom">Pinch with two fingers to magnify the stream (up to 4x) and move both fingers to look around; pinch back to return to normal. When off, pinching zooms the game camera with the mouse wheel instead.</string>
     <string name="title_checkbox_touch_camera_drag">Tap to click, drag to turn camera</string>
     <string name="summary_checkbox_touch_camera_drag">Tap to left click where you touch, drag to turn the camera (holds the right mouse button), and drag two fingers up or down to zoom. When off, touch works as direct click: dragging holds the left button and a long press right-clicks.</string>
     <string name="suffix_kbm_camera_speed">px/s</string>

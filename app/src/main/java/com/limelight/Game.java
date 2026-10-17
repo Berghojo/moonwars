@@ -16,6 +16,7 @@ import com.limelight.binding.input.evdev.EvdevListener;
 import com.limelight.binding.input.touch.TouchContext;
 import com.limelight.binding.input.kbm.KbmController;
 import com.limelight.ui.SensitivityDialog;
+import com.limelight.ui.StreamZoom;
 import com.limelight.binding.input.virtual_controller.VirtualController;
 import com.limelight.binding.video.CrashListener;
 import com.limelight.binding.video.MediaCodecDecoderRenderer;
@@ -101,6 +102,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     // Only 2 touches are supported
     private final TouchContext[] touchContextMap = new TouchContext[2];
+    private StreamZoom streamZoom;
+    private boolean screenZoomGesture;
     private long threeFingerDownTime = 0;
 
     private static final int REFERENCE_HORIZ_RES = 1280;
@@ -242,6 +245,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         // Listen for non-touch events on the game surface
         streamView = findViewById(R.id.surfaceView);
+        streamZoom = new StreamZoom(streamView);
         streamView.setOnGenericMotionListener(this);
         streamView.setOnKeyListener(this);
         streamView.setInputCallbacks(this);
@@ -1497,6 +1501,58 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
     }
 
+    // Handles two-finger gestures as a screen zoom. Returns true if the event was consumed.
+    private boolean handleScreenZoom(MotionEvent event) {
+        int action = event.getActionMasked();
+
+        if (!screenZoomGesture) {
+            if (action == MotionEvent.ACTION_POINTER_DOWN && event.getPointerCount() == 2) {
+                // Release whatever the first finger was doing (camera drag, click)
+                for (TouchContext touchContext : touchContextMap) {
+                    touchContext.cancelTouch();
+                }
+                screenZoomGesture = true;
+                streamZoom.begin(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
+                return true;
+            }
+            return false;
+        }
+
+        switch (action) {
+            case MotionEvent.ACTION_MOVE:
+                if (event.getPointerCount() >= 2) {
+                    streamZoom.update(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
+                }
+                return true;
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+                if (event.getPointerCount() >= 3) {
+                    // Let the three finger tap (keyboard) through
+                    streamZoom.end();
+                    screenZoomGesture = false;
+                    return false;
+                }
+                // A finger landed again after one was lifted: resume zooming
+                streamZoom.begin(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
+                return true;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                // Stop zooming, but keep ignoring the remaining finger until it lifts so it
+                // doesn't turn the camera
+                streamZoom.end();
+                return true;
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                streamZoom.end();
+                screenZoomGesture = false;
+                return true;
+
+            default:
+                return true;
+        }
+    }
+
     private void initializeTouchContexts() {
         // Both fingers of a pinch report into the same zoom tracker
         TwoFingerZoom zoom = new TwoFingerZoom();
@@ -2048,8 +2104,16 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     return true;
                 }
 
+                // Pinch to magnify the stream (two fingers never reach the touch contexts then)
+                if (prefConfig.pinchScreenZoom && handleScreenZoom(event)) {
+                    return true;
+                }
+
                 // If this is the parent view, we'll offset our coordinates to appear as if they
                 // are relative to the StreamView like our StreamView touch events are.
+                // While the stream is magnified, divide by the zoom to get stream coordinates.
+                // (Events from the StreamView itself are already in its coordinates.)
+                float zoomScale = view != streamView ? streamView.getScaleX() : 1f;
                 float xOffset, yOffset;
                 if (view != streamView && !prefConfig.touchscreenTrackpad) {
                     xOffset = -streamView.getX();
@@ -2062,8 +2126,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
                 int actionIndex = event.getActionIndex();
 
-                int eventX = (int)(event.getX(actionIndex) + xOffset);
-                int eventY = (int)(event.getY(actionIndex) + yOffset);
+                int eventX = (int)((event.getX(actionIndex) + xOffset) / zoomScale);
+                int eventY = (int)((event.getY(actionIndex) + yOffset) / zoomScale);
 
                 // Special handling for 3 finger gesture
                 if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN &&
@@ -2128,8 +2192,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     if (actionIndex == 0 && event.getPointerCount() > 1 && !context.isCancelled()) {
                         // The original secondary touch now becomes primary
                         context.touchDownEvent(
-                                (int)(event.getX(1) + xOffset),
-                                (int)(event.getY(1) + yOffset),
+                                (int)((event.getX(1) + xOffset) / zoomScale),
+                                (int)((event.getY(1) + yOffset) / zoomScale),
                                 event.getEventTime(), false);
                     }
                     break;
@@ -2143,8 +2207,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                             if (aTouchContextMap.getActionIndex() < event.getPointerCount())
                             {
                                 aTouchContextMap.touchMoveEvent(
-                                        (int)(event.getHistoricalX(aTouchContextMap.getActionIndex(), i) + xOffset),
-                                        (int)(event.getHistoricalY(aTouchContextMap.getActionIndex(), i) + yOffset),
+                                        (int)((event.getHistoricalX(aTouchContextMap.getActionIndex(), i) + xOffset) / zoomScale),
+                                        (int)((event.getHistoricalY(aTouchContextMap.getActionIndex(), i) + yOffset) / zoomScale),
                                         event.getHistoricalEventTime(i));
                             }
                         }
@@ -2155,8 +2219,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         if (aTouchContextMap.getActionIndex() < event.getPointerCount())
                         {
                             aTouchContextMap.touchMoveEvent(
-                                    (int)(event.getX(aTouchContextMap.getActionIndex()) + xOffset),
-                                    (int)(event.getY(aTouchContextMap.getActionIndex()) + yOffset),
+                                    (int)((event.getX(aTouchContextMap.getActionIndex()) + xOffset) / zoomScale),
+                                    (int)((event.getY(aTouchContextMap.getActionIndex()) + yOffset) / zoomScale),
                                     event.getEventTime());
                         }
                     }

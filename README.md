@@ -47,8 +47,10 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
 * **Tap**: left click exactly where you touched (NPCs, loot, UI, menus).
 * **Drag one finger**: holds the right mouse button and turns the camera, like right-click dragging
   in GW2.
-* **Pinch, or drag two fingers up / down**: zoom in / out (mouse wheel). Spreading the fingers or
-  moving them up zooms in.
+* **Pinch**: magnifies the screen (up to 4×), like GeForce NOW. While zoomed in, move both fingers
+  to look around; pinch back to return to normal. Taps still click the right spot while zoomed.
+  (Settings → *Pinch to zoom the screen* off: pinching zooms the game camera with the mouse wheel
+  instead.)
 
 **On-screen layout (keyboard/mouse mode)** is styled after Guild Wars 2's own HUD:
 

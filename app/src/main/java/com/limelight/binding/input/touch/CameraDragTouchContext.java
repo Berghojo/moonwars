@@ -125,7 +125,9 @@ public class CameraDragTouchContext implements TouchContext {
 
         if (isNewFinger && pointerCount <= 1) {
             // Start of a new gesture
-            double sensitivity = prefConfig.touchMouseSensitivity / 100.0;
+            // Positions are in stream coordinates, which shrink while the screen is
+            // zoomed in; scale back up so the camera turns at the same speed
+            double sensitivity = prefConfig.touchMouseSensitivity / 100.0 * targetView.getScaleX();
             xFactor = sensitivity * referenceWidth / (double) targetView.getWidth();
             yFactor = sensitivity * referenceHeight / (double) targetView.getHeight();
 
