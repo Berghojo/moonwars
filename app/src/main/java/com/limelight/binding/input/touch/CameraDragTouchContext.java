@@ -16,10 +16,11 @@ import com.limelight.preferences.PreferenceConfiguration;
  *   <li>Dragging one finger holds the right mouse button and moves the mouse,
  *       so the camera turns with the finger.</li>
  *   <li>A quick tap moves the cursor to the finger and left clicks there.</li>
- *   <li>Dragging two fingers up or down scrolls the mouse wheel (zoom).</li>
+ *   <li>Pinching, or dragging two fingers up or down, scrolls the mouse wheel
+ *       (zoom).</li>
  * </ul>
- * Only the first finger drives the camera; the second finger just switches the
- * gesture to zooming.
+ * Only the first finger drives the camera; a second finger switches the gesture
+ * to zooming, tracked by a {@link TwoFingerZoom} shared by both fingers' contexts.
  */
 public class CameraDragTouchContext implements TouchContext {
     // How far a finger must move before a touch turns into a camera drag
@@ -28,8 +29,8 @@ public class CameraDragTouchContext implements TouchContext {
     private static final long TAP_TIME_MS = 300;
     // How long the left button stays down for a tap
     private static final long TAP_CLICK_MS = 50;
-    // Two-finger drag distance per mouse wheel notch, as a fraction of the view height
-    private static final float ZOOM_STEP_FRACTION = 0.04f;
+    // Pinch / two-finger drag distance per mouse wheel notch, as a fraction of the view height
+    private static final float ZOOM_STEP_FRACTION = 0.035f;
 
     private final NvConnection conn;
     private final ControllerHandler controllerHandler;
@@ -38,6 +39,7 @@ public class CameraDragTouchContext implements TouchContext {
     private final int referenceHeight;
     private final View targetView;
     private final PreferenceConfiguration prefConfig;
+    private final TwoFingerZoom zoom;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final float dragSlopPx;
 
@@ -46,7 +48,6 @@ public class CameraDragTouchContext implements TouchContext {
     private int lastTouchX, lastTouchY;
     private double pendingX, pendingY;
     private double xFactor, yFactor;
-    private float zoomAccumulator;
     private int pointerCount;
     private boolean rightButtonHeld;
     // Set once a second finger lands; stays set until every finger is lifted
@@ -67,7 +68,7 @@ public class CameraDragTouchContext implements TouchContext {
 
     public CameraDragTouchContext(NvConnection conn, ControllerHandler controllerHandler,
                                   int actionIndex, int referenceWidth, int referenceHeight,
-                                  View view, PreferenceConfiguration prefConfig) {
+                                  View view, PreferenceConfiguration prefConfig, TwoFingerZoom zoom) {
         this.conn = conn;
         this.controllerHandler = controllerHandler;
         this.actionIndex = actionIndex;
@@ -75,6 +76,7 @@ public class CameraDragTouchContext implements TouchContext {
         this.referenceHeight = referenceHeight;
         this.targetView = view;
         this.prefConfig = prefConfig;
+        this.zoom = zoom;
         this.dragSlopPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DRAG_SLOP_DP,
                 view.getResources().getDisplayMetrics());
     }
@@ -88,26 +90,38 @@ public class CameraDragTouchContext implements TouchContext {
     public void setPointerCount(int pointerCount) {
         this.pointerCount = pointerCount;
 
-        if (actionIndex == 0 && pointerCount >= 2 && !zooming) {
+        if (actionIndex != 0) {
+            return;
+        }
+        if (pointerCount >= 2 && !zooming) {
             // A second finger turns the gesture into a zoom
             zooming = true;
-            zoomAccumulator = 0;
             setRightButton(false);
+            zoom.begin(lastTouchX, lastTouchY);
         }
         else if (pointerCount == 0) {
             zooming = false;
+            zoom.end();
         }
     }
 
     @Override
     public boolean touchDownEvent(int eventX, int eventY, long eventTime, boolean isNewFinger) {
         if (actionIndex != 0) {
+            // Second finger: record where it starts for the zoom
+            zoom.update(actionIndex, eventX, eventY, zoomStep());
             return true;
         }
 
         lastTouchX = eventX;
         lastTouchY = eventY;
         pendingX = pendingY = 0;
+
+        if (!isNewFinger && zoom.isActive()) {
+            // The first finger lifted and the second one became the primary finger
+            zoom.removePoint(1);
+            zoom.update(0, eventX, eventY, zoomStep());
+        }
 
         if (isNewFinger && pointerCount <= 1) {
             // Start of a new gesture
@@ -119,6 +133,7 @@ public class CameraDragTouchContext implements TouchContext {
             downY = eventY;
             downTime = eventTime;
             zooming = false;
+            zoom.end();
             cancelled = false;
         }
         return true;
@@ -126,22 +141,19 @@ public class CameraDragTouchContext implements TouchContext {
 
     @Override
     public boolean touchMoveEvent(int eventX, int eventY, long eventTime) {
-        if (cancelled || actionIndex != 0) {
+        if (zoom.isActive()) {
+            if (actionIndex == 0) {
+                lastTouchX = eventX;
+                lastTouchY = eventY;
+            }
+            int notches = zoom.update(actionIndex, eventX, eventY, zoomStep());
+            if (notches != 0) {
+                conn.sendMouseScroll((byte) notches);
+            }
             return true;
         }
 
-        if (zooming) {
-            // Fingers moving up zoom in (wheel up), down zoom out
-            zoomAccumulator += lastTouchY - eventY;
-            lastTouchX = eventX;
-            lastTouchY = eventY;
-
-            float step = Math.max(1, targetView.getHeight() * ZOOM_STEP_FRACTION);
-            int notches = (int) (zoomAccumulator / step);
-            if (notches != 0) {
-                zoomAccumulator -= notches * step;
-                conn.sendMouseScroll((byte) Math.max(-127, Math.min(127, notches)));
-            }
+        if (cancelled || actionIndex != 0) {
             return true;
         }
 
@@ -174,6 +186,10 @@ public class CameraDragTouchContext implements TouchContext {
 
     @Override
     public void touchUpEvent(int eventX, int eventY, long eventTime) {
+        if (zoom.isActive()) {
+            // A lifted finger stops counting towards the zoom
+            zoom.removePoint(actionIndex);
+        }
         if (actionIndex != 0 || cancelled) {
             return;
         }
@@ -201,6 +217,13 @@ public class CameraDragTouchContext implements TouchContext {
     public void cancelTouch() {
         cancelled = true;
         setRightButton(false);
+        if (actionIndex == 0) {
+            zoom.end();
+        }
+    }
+
+    private float zoomStep() {
+        return Math.max(1, targetView.getHeight() * ZOOM_STEP_FRACTION);
     }
 
     @Override

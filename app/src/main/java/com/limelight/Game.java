@@ -9,6 +9,7 @@ import com.limelight.binding.input.capture.InputCaptureManager;
 import com.limelight.binding.input.capture.InputCaptureProvider;
 import com.limelight.binding.input.touch.AbsoluteTouchContext;
 import com.limelight.binding.input.touch.CameraDragTouchContext;
+import com.limelight.binding.input.touch.TwoFingerZoom;
 import com.limelight.binding.input.touch.RelativeTouchContext;
 import com.limelight.binding.input.driver.UsbDriverService;
 import com.limelight.binding.input.evdev.EvdevListener;
@@ -1497,11 +1498,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     private void initializeTouchContexts() {
+        // Both fingers of a pinch report into the same zoom tracker
+        TwoFingerZoom zoom = new TwoFingerZoom();
         for (int i = 0; i < touchContextMap.length; i++) {
             if (prefConfig.touchCameraDrag) {
                 touchContextMap[i] = new CameraDragTouchContext(conn, controllerHandler, i,
                         REFERENCE_HORIZ_RES, REFERENCE_VERT_RES,
-                        streamView, prefConfig);
+                        streamView, prefConfig, zoom);
             }
             else if (!prefConfig.touchscreenTrackpad) {
                 touchContextMap[i] = new AbsoluteTouchContext(conn, i, streamView);
