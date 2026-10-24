@@ -41,6 +41,8 @@ public final class KbmBindings {
         OSC_INVENTORY("On-screen inventory button", 0x04000000),
         OSC_FRIENDS("On-screen friend list button", 0x08000000),
         OSC_MOUNT("On-screen mount button", 0x10000000),
+        OSC_ZOOM_IN("On-screen zoom in button", 0x20000000),
+        OSC_ZOOM_OUT("On-screen zoom out button", 0x40000000),
         LS_UP("Left stick up", 0),
         LS_DOWN("Left stick down", 0),
         LS_LEFT("Left stick left", 0),
@@ -70,7 +72,7 @@ public final class KbmBindings {
     }
 
     // Button flags used only by the on-screen BAR and extra buttons
-    public static final int OSC_ONLY_FLAGS = 0x1F000000;
+    public static final int OSC_ONLY_FLAGS = 0x7F000000;
 
     public static final String PREF_PREFIX_BASE = "kbm_bind_base_";
     public static final String PREF_PREFIX_SHIFT = "kbm_bind_shift_";
@@ -136,6 +138,8 @@ public final class KbmBindings {
         b.setBase(Input.OSC_INVENTORY, KbmAction.key('I'));
         b.setBase(Input.OSC_FRIENDS, KbmAction.key('Z'));
         b.setBase(Input.OSC_MOUNT, KbmAction.key('E'));
+        b.setBase(Input.OSC_ZOOM_IN, KbmAction.WHEEL_UP);
+        b.setBase(Input.OSC_ZOOM_OUT, KbmAction.WHEEL_DOWN);
 
         return b;
     }
@@ -164,6 +168,8 @@ public final class KbmBindings {
         b.setBase(Input.OSC_INVENTORY, KbmAction.key('I'));
         b.setBase(Input.OSC_FRIENDS, KbmAction.key('Z'));
         b.setBase(Input.OSC_MOUNT, KbmAction.key('E'));
+        b.setBase(Input.OSC_ZOOM_IN, KbmAction.WHEEL_UP);
+        b.setBase(Input.OSC_ZOOM_OUT, KbmAction.WHEEL_DOWN);
 
         b.setBase(Input.LT, KbmAction.key('V')); // dodge
         b.setBase(Input.RT, KbmAction.key(KbmAction.VK_SPACE)); // jump

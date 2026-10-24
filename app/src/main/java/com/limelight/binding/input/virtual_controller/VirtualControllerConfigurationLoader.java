@@ -564,7 +564,8 @@ public class VirtualControllerConfigurationLoader {
      *   <li>Move stick bottom left</li>
      *   <li>Skills in a column along the right edge, 1 at the bottom up to 5,
      *       with the bar swap on top</li>
-     *   <li>Dodge and jump left of the skill column, F1-F3 in a row left of dodge</li>
+     *   <li>Dodge, jump and camera zoom in/out stacked left of the skill column,
+     *       F1-F3 in a row left of dodge</li>
      *   <li>Interact, mount, target, inventory and friend list along the top right</li>
      *   <li>Keyboard, sensitivity, hide-all, Esc and map in a tray along the top
      *       that folds away to the edge behind a small arrow tab</li>
@@ -608,9 +609,22 @@ public class VirtualControllerConfigurationLoader {
         float dodgeY = 72 - edge - dodgeSize;
         controller.addElement(createLeftTrigger(1, "LT", -1, controller, context),
                 scale(dodgeX, height), scale(dodgeY, height), scale(dodgeSize, height), scale(dodgeSize, height));
+        float jumpY = dodgeY - edge - jumpSize;
         controller.addElement(createRightTrigger(1, "RT", -1, controller, context),
-                scale(dodgeX + (dodgeSize - jumpSize) / 2, height), scale(dodgeY - edge - jumpSize, height),
+                scale(dodgeX + (dodgeSize - jumpSize) / 2, height), scale(jumpY, height),
                 scale(jumpSize, height), scale(jumpSize, height));
+
+        // Camera zoom (mouse wheel, repeats while held) stacked above jump
+        float zoomSize = 9;
+        float zoomX = dodgeX + (dodgeSize - zoomSize) / 2;
+        float zoomOutY = jumpY - edge - zoomSize;
+        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_ZOOM_OUT,
+                        KbmBindings.Input.OSC_ZOOM_OUT.buttonFlag, 0, 1, "ZOOM-", -1, controller, context),
+                scale(zoomX, height), scale(zoomOutY, height), scale(zoomSize, height), scale(zoomSize, height));
+        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_ZOOM_IN,
+                        KbmBindings.Input.OSC_ZOOM_IN.buttonFlag, 0, 1, "ZOOM+", -1, controller, context),
+                scale(zoomX, height), scale(zoomOutY - gap - zoomSize, height),
+                scale(zoomSize, height), scale(zoomSize, height));
 
         // Profession skills F1-F3 in a row along the bottom, left of dodge
         float profWidth = 10, profHeight = 8;

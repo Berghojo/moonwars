@@ -58,7 +58,8 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
 * **Move stick**: bottom left.
 * **Skills**: a column along the right edge, `1` at the bottom up to `5` at the top. The `1-5` /
   `6-0` slot on top swaps the bar.
-* **Dodge (V), jump (Space)**: directly left of the skill column, dodge at the bottom.
+* **Dodge (V), jump (Space), camera zoom (Zoom+ / Zoom-)**: stacked directly left of the skill
+  column, dodge at the bottom. The zoom buttons send the mouse wheel and keep zooming while held.
 * **F1 / F2 / F3**: a row along the bottom, left of dodge.
 * **Top bar (right)**: interact (F), mount (E), tap-click toggle, inventory (I), friend list (Z).
   The tap-click toggle (mouse icon) switches whether tapping the stream left-clicks or
@@ -101,6 +102,7 @@ Each on-screen button shows the key it currently sends, and the labels change wh
 | D-pad ↑ → ↓ ← (on screen: F2, F3, interact, target buttons) | `F2` gunsaber, `F3`, `F` interact, `Tab` next target | (same) |
 | Start / Back | `Esc` / `M` map | (same) |
 | Inventory / friend list / mount (on-screen) | `I` / `Z` / `E` | (same) |
+| Zoom+ / Zoom- (on-screen) | mouse wheel up / down | (same) |
 | Left stick | W A S D | (same) |
 | Touch | tap = left click, drag = camera, 2 fingers = zoom | (same) |
 

@@ -220,6 +220,25 @@ public class GamepadKbmMapperTest {
     }
 
     @Test
+    public void zoomButtonsScrollAndRepeatWhileHeld() {
+        mapper = new GamepadKbmMapper(out, config, KbmBindings.bladeswornDefaults());
+        int zoomIn = KbmBindings.Input.OSC_ZOOM_IN.buttonFlag;
+        int zoomOut = KbmBindings.Input.OSC_ZOOM_OUT.buttonFlag;
+
+        state(zoomIn, 0, 0, 0, 0, 0);
+        assertTrue(mapper.needsTick());
+        mapper.tick(config.wheelRepeatDelayMs);
+        state(0, 0, 0, 0, 0, config.wheelRepeatDelayMs + 1);
+        assertEquals(List.of("scroll 1", "scroll 1"), out.events);
+
+        out.events.clear();
+        state(zoomOut, 0, 0, 0, 0, 1000);
+        state(0, 0, 0, 0, 0, 1001);
+        assertEquals(List.of("scroll -1"), out.events);
+        assertFalse(mapper.needsTick());
+    }
+
+    @Test
     public void sharedKeyIsReleasedOnlyByLastHolder() {
         KbmBindings bindings = KbmBindings.guildWars2Defaults();
         bindings.setBase(KbmBindings.Input.RB, KbmAction.key('W'));

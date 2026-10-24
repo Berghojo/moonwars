@@ -54,6 +54,8 @@ public abstract class VirtualControllerElement extends View {
     public static final int EID_KBM_FRIENDS = 31;
     public static final int EID_KBM_MOUNT = 32;
     public static final int EID_TAP_BUTTON = 33;
+    public static final int EID_KBM_ZOOM_IN = 34;
+    public static final int EID_KBM_ZOOM_OUT = 35;
 
     protected VirtualController virtualController;
     protected final int elementId;
