@@ -20,8 +20,10 @@ import org.json.JSONObject;
 
 public class VirtualControllerConfigurationLoader {
     public static final String OSC_PREFERENCE = "OSC";
-    // Button positions for the keyboard/mouse layout are saved separately
-    public static final String OSC_KBM_PREFERENCE = "OSC_KBM";
+    // Button positions for the keyboard/mouse layout are saved separately. The
+    // version suffix changes when the default layout is reworked, so positions
+    // saved for an older layout don't scramble the new one.
+    public static final String OSC_KBM_PREFERENCE = "OSC_KBM_V2";
 
     private static String profileName(VirtualController controller) {
         return controller.getKbmController() != null ? OSC_KBM_PREFERENCE : OSC_PREFERENCE;
@@ -558,10 +560,10 @@ public class VirtualControllerConfigurationLoader {
      * turns the camera and zooms, so there's no right stick or mouse buttons:
      * <ul>
      *   <li>Move stick bottom left</li>
-     *   <li>Skill bar along the bottom center (bar swap + 5 slots), with F1-F3
-     *       above it like GW2's profession bar</li>
-     *   <li>Dodge and jump in the bottom right corner; interact, target,
-     *       inventory and friend list in the top right corner</li>
+     *   <li>Skills in a column along the right edge, 1 at the bottom up to 5,
+     *       with the bar swap on top</li>
+     *   <li>Dodge and jump left of the skill column, F1-F3 in a row left of dodge</li>
+     *   <li>Interact, mount, target, inventory and friend list along the top right</li>
      *   <li>Keyboard, sensitivity, hide-all, Esc and map in a tray along the top
      *       that folds away to the edge behind a small arrow tab</li>
      * </ul>
@@ -579,68 +581,79 @@ public class VirtualControllerConfigurationLoader {
                 scale(stickX, height), scale(stickY, height),
                 scale(stickSize, height), scale(stickSize, height));
 
-        // Dodge and jump in the bottom right corner
-        controller.addElement(createLeftTrigger(1, "LT", -1, controller, context),
-                scale(right - 18, height), scale(54, height), scale(16, height), scale(16, height));
-        controller.addElement(createRightTrigger(1, "RT", -1, controller, context),
-                scale(right - 15, height), scale(39, height), scale(12, height), scale(12, height));
-
-        // Interact (corner), target, inventory and friend list along the top right
-        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_DPAD_DOWN,
-                        ControllerPacket.DOWN_FLAG, 0, 1, "DOWN", -1, controller, context),
-                scale(right - 15, height), scale(2, height), scale(13, height), scale(13, height));
-        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_DPAD_LEFT,
-                        ControllerPacket.LEFT_FLAG, 0, 1, "LEFT", -1, controller, context),
-                scale(right - 28, height), scale(3, height), scale(11, height), scale(11, height));
-        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_INVENTORY,
-                        KbmBindings.Input.OSC_INVENTORY.buttonFlag, 0, 1, "INV", -1, controller, context),
-                scale(right - 40, height), scale(3.5f, height), scale(10, height), scale(10, height));
-        controller.addElement(createDigitalButton(VirtualControllerElement.EID_KBM_FRIENDS,
-                        KbmBindings.Input.OSC_FRIENDS.buttonFlag, 0, 1, "FRIENDS", -1, controller, context),
-                scale(right - 51, height), scale(3.5f, height), scale(10, height), scale(10, height));
-
-        // Skill bar: centered at the bottom, kept clear of the stick and action buttons
-        float gap = 1, barWidth = 8, slot = 10;
-        float minX = stickX + stickSize + 2;
-        float maxX = right - 20;
-        float total = barWidth + gap + 5 * slot + 4 * gap;
-        float x0 = Math.max(right / 2 - total / 2, minX);
-        if (x0 + total > maxX) {
-            x0 = Math.max(minX, maxX - total);
-            if (x0 + total > maxX) {
-                // Narrow screen: shrink the slots to fit
-                slot = (maxX - minX - barWidth - 5 * gap) / 5;
-            }
-        }
-        float skillY = 72 - slot - 1.5f;
-
-        controller.addElement(square(createDigitalButton(VirtualControllerElement.EID_KBM_BAR,
-                        KbmBindings.Input.OSC_BAR.buttonFlag, 0, 1, "BAR", -1, controller, context)),
-                scale(x0, height), scale(skillY, height), scale(barWidth, height), scale(slot, height));
-
+        // Skill column along the right edge: 1 at the bottom up to 5, with the bar swap on top
+        float gap = 1, edge = 1.5f, slot = 10, barHeight = 8;
+        float columnX = right - edge - slot;
         int[] skillFlags = { ControllerPacket.A_FLAG, ControllerPacket.B_FLAG, ControllerPacket.X_FLAG,
                 ControllerPacket.Y_FLAG, ControllerPacket.RB_FLAG };
         int[] skillIds = { VirtualControllerElement.EID_A, VirtualControllerElement.EID_B,
                 VirtualControllerElement.EID_X, VirtualControllerElement.EID_Y, VirtualControllerElement.EID_RB };
-        float slotsX = x0 + barWidth + gap;
+        float slotY = 72 - edge - slot;
         for (int i = 0; i < skillFlags.length; i++) {
             controller.addElement(square(createDigitalButton(skillIds[i], skillFlags[i], 0, 1,
                             String.valueOf(i + 1), -1, controller, context)),
-                    scale(slotsX + i * (slot + gap), height), scale(skillY, height),
-                    scale(slot, height), scale(slot, height));
+                    scale(columnX, height), scale(slotY, height), scale(slot, height), scale(slot, height));
+            slotY -= slot + gap;
         }
+        float barY = slotY + slot - barHeight;
+        controller.addElement(square(createDigitalButton(VirtualControllerElement.EID_KBM_BAR,
+                        KbmBindings.Input.OSC_BAR.buttonFlag, 0, 1, "BAR", -1, controller, context)),
+                scale(columnX, height), scale(barY, height), scale(slot, height), scale(barHeight, height));
 
-        // Profession bar (F1-F3) above skill slots 2-4
-        float profHeight = slot * 0.65f;
-        float profY = skillY - gap - profHeight;
+        // Dodge (bottom) and jump left of the skill column
+        float dodgeSize = 15, jumpSize = 12;
+        float dodgeX = columnX - edge - dodgeSize;
+        float dodgeY = 72 - edge - dodgeSize;
+        controller.addElement(createLeftTrigger(1, "LT", -1, controller, context),
+                scale(dodgeX, height), scale(dodgeY, height), scale(dodgeSize, height), scale(dodgeSize, height));
+        controller.addElement(createRightTrigger(1, "RT", -1, controller, context),
+                scale(dodgeX + (dodgeSize - jumpSize) / 2, height), scale(dodgeY - edge - jumpSize, height),
+                scale(jumpSize, height), scale(jumpSize, height));
+
+        // Profession skills F1-F3 in a row along the bottom, left of dodge
+        float profWidth = 10, profHeight = 8;
+        float profY = 72 - edge - profHeight;
         int[] profFlags = { KbmBindings.Input.OSC_EXTRA.buttonFlag, ControllerPacket.UP_FLAG, ControllerPacket.RIGHT_FLAG };
         int[] profIds = { VirtualControllerElement.EID_KBM_EXTRA, VirtualControllerElement.EID_KBM_DPAD_UP,
                 VirtualControllerElement.EID_KBM_DPAD_RIGHT };
+        float profX = dodgeX - edge - profFlags.length * (profWidth + gap) + gap;
         for (int i = 0; i < profFlags.length; i++) {
             controller.addElement(square(createDigitalButton(profIds[i], profFlags[i], 0, 1,
                             "F" + (i + 1), -1, controller, context)),
-                    scale(slotsX + (i + 1) * (slot + gap), height), scale(profY, height),
-                    scale(slot, height), scale(profHeight, height));
+                    scale(profX + i * (profWidth + gap), height), scale(profY, height),
+                    scale(profWidth, height), scale(profHeight, height));
+        }
+
+        // Top bar, right to left from the skill column: interact, mount, target,
+        // inventory, friend list. Buttons that would run into the tray wrap to a
+        // second row underneath.
+        float trayEnd = 7 + 4 + 1 + 5 * (9 + 1);
+        int[] topFlags = { ControllerPacket.DOWN_FLAG, KbmBindings.Input.OSC_MOUNT.buttonFlag,
+                ControllerPacket.LEFT_FLAG, KbmBindings.Input.OSC_INVENTORY.buttonFlag,
+                KbmBindings.Input.OSC_FRIENDS.buttonFlag };
+        int[] topIds = { VirtualControllerElement.EID_KBM_DPAD_DOWN, VirtualControllerElement.EID_KBM_MOUNT,
+                VirtualControllerElement.EID_KBM_DPAD_LEFT, VirtualControllerElement.EID_KBM_INVENTORY,
+                VirtualControllerElement.EID_KBM_FRIENDS };
+        // Shown only if a button has no binding
+        String[] topNames = { "USE", "MOUNT", "TARGET", "INV", "FRIENDS" };
+        float[] topSizes = { 12, 11, 11, 10, 10 };
+        float rowHeight = 12;
+        float topRight = columnX - 2;
+        float rowY = 2;
+        for (int i = 0; i < topFlags.length; i++) {
+            float size = topSizes[i];
+            float x = topRight - size;
+            if (x < trayEnd && rowY == 2) {
+                // Wrap to a second row
+                rowY += rowHeight + gap;
+                topRight = columnX - 2;
+                x = topRight - size;
+            }
+            controller.addElement(createDigitalButton(topIds[i], topFlags[i], 0, 1,
+                            topNames[i], -1, controller, context),
+                    scale(x, height), scale(rowY + (rowHeight - size) / 2, height),
+                    scale(size, height), scale(size, height));
+            topRight = x - gap;
         }
 
         // Fold-away tray along the top edge, right of the layout editor gear

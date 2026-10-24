@@ -40,6 +40,7 @@ public final class KbmBindings {
         OSC_EXTRA("On-screen extra button", 0x02000000),
         OSC_INVENTORY("On-screen inventory button", 0x04000000),
         OSC_FRIENDS("On-screen friend list button", 0x08000000),
+        OSC_MOUNT("On-screen mount button", 0x10000000),
         LS_UP("Left stick up", 0),
         LS_DOWN("Left stick down", 0),
         LS_LEFT("Left stick left", 0),
@@ -69,7 +70,7 @@ public final class KbmBindings {
     }
 
     // Button flags used only by the on-screen BAR and extra buttons
-    public static final int OSC_ONLY_FLAGS = 0x0F000000;
+    public static final int OSC_ONLY_FLAGS = 0x1F000000;
 
     public static final String PREF_PREFIX_BASE = "kbm_bind_base_";
     public static final String PREF_PREFIX_SHIFT = "kbm_bind_shift_";
@@ -134,6 +135,7 @@ public final class KbmBindings {
         b.setBase(Input.OSC_EXTRA, KbmAction.key(KbmAction.VK_F1));
         b.setBase(Input.OSC_INVENTORY, KbmAction.key('I'));
         b.setBase(Input.OSC_FRIENDS, KbmAction.key('Z'));
+        b.setBase(Input.OSC_MOUNT, KbmAction.key('E'));
 
         return b;
     }
@@ -161,6 +163,7 @@ public final class KbmBindings {
         b.setBase(Input.OSC_EXTRA, KbmAction.key(KbmAction.VK_F1)); // Dragon Trigger
         b.setBase(Input.OSC_INVENTORY, KbmAction.key('I'));
         b.setBase(Input.OSC_FRIENDS, KbmAction.key('Z'));
+        b.setBase(Input.OSC_MOUNT, KbmAction.key('E'));
 
         b.setBase(Input.LT, KbmAction.key('V')); // dodge
         b.setBase(Input.RT, KbmAction.key(KbmAction.VK_SPACE)); // jump
