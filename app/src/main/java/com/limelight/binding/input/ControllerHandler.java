@@ -2898,6 +2898,10 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         gestures.showSensitivitySettings();
     }
 
+    public boolean toggleTapRightClick() {
+        return gestures.toggleTapRightClick();
+    }
+
     @Override
     public void reportControllerState(int controllerId, int buttonFlags,
                                       float leftStickX, float leftStickY,

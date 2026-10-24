@@ -8,4 +8,7 @@ public interface GameGestures {
 
     // Opens the in-stream sensitivity settings
     void showSensitivitySettings();
+
+    // Switches whether tapping the stream left or right clicks; returns true for right click
+    boolean toggleTapRightClick();
 }

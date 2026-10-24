@@ -339,6 +339,11 @@ public class VirtualController {
         }
     }
 
+    /** Switches the tap click button and returns true if taps now right click. */
+    boolean toggleTapRightClick() {
+        return controllerHandler != null && controllerHandler.toggleTapRightClick();
+    }
+
     void showSensitivitySettings() {
         if (controllerHandler != null) {
             controllerHandler.showSensitivitySettings();

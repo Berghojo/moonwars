@@ -188,7 +188,9 @@ public class VirtualControllerConfigurationLoader {
             @Override
             public void onRelease() {
                 // Act on release so a keyboard or mode change doesn't steal the touch that triggered it
-                action.run();
+                if (action != null) {
+                    action.run();
+                }
             }
         });
 
@@ -624,18 +626,38 @@ public class VirtualControllerConfigurationLoader {
                     scale(profWidth, height), scale(profHeight, height));
         }
 
-        // Top bar, right to left from the skill column: interact, mount, target,
-        // inventory, friend list. Buttons that would run into the tray wrap to a
-        // second row underneath.
+        // Top bar, right to left from the skill column: interact, mount, tap click
+        // toggle, inventory, friend list. Buttons that would run into the tray wrap
+        // to a second row underneath.
         float trayEnd = 7 + 4 + 1 + 5 * (9 + 1);
-        int[] topFlags = { ControllerPacket.DOWN_FLAG, KbmBindings.Input.OSC_MOUNT.buttonFlag,
-                ControllerPacket.LEFT_FLAG, KbmBindings.Input.OSC_INVENTORY.buttonFlag,
-                KbmBindings.Input.OSC_FRIENDS.buttonFlag };
+        // Tap click toggle: shows which mouse button a tap on the stream presses
+        final DigitalButton tapButton = createActionButton(VirtualControllerElement.EID_TAP_BUTTON, "TAP",
+                config.tapRightClick ? R.drawable.ic_osc_mouse_right : R.drawable.ic_osc_mouse_left,
+                null, controller, context);
+        tapButton.addDigitalButtonListener(new DigitalButton.DigitalButtonListener() {
+            @Override
+            public void onClick() {
+            }
+
+            @Override
+            public void onLongClick() {
+            }
+
+            @Override
+            public void onRelease() {
+                tapButton.setIcon(controller.toggleTapRightClick() ?
+                        R.drawable.ic_osc_mouse_right : R.drawable.ic_osc_mouse_left);
+            }
+        });
+
+        // A flag of 0 marks the tap toggle, which isn't a bound button
+        int[] topFlags = { ControllerPacket.DOWN_FLAG, KbmBindings.Input.OSC_MOUNT.buttonFlag, 0,
+                KbmBindings.Input.OSC_INVENTORY.buttonFlag, KbmBindings.Input.OSC_FRIENDS.buttonFlag };
         int[] topIds = { VirtualControllerElement.EID_KBM_DPAD_DOWN, VirtualControllerElement.EID_KBM_MOUNT,
-                VirtualControllerElement.EID_KBM_DPAD_LEFT, VirtualControllerElement.EID_KBM_INVENTORY,
+                VirtualControllerElement.EID_TAP_BUTTON, VirtualControllerElement.EID_KBM_INVENTORY,
                 VirtualControllerElement.EID_KBM_FRIENDS };
         // Shown only if a button has no binding
-        String[] topNames = { "USE", "MOUNT", "TARGET", "INV", "FRIENDS" };
+        String[] topNames = { "USE", "MOUNT", "TAP", "INV", "FRIENDS" };
         float[] topSizes = { 12, 11, 11, 10, 10 };
         float rowHeight = 12;
         float topRight = columnX - 2;
@@ -649,8 +671,10 @@ public class VirtualControllerConfigurationLoader {
                 topRight = columnX - 2;
                 x = topRight - size;
             }
-            controller.addElement(createDigitalButton(topIds[i], topFlags[i], 0, 1,
-                            topNames[i], -1, controller, context),
+            DigitalButton button = topFlags[i] != 0 ?
+                    createDigitalButton(topIds[i], topFlags[i], 0, 1, topNames[i], -1, controller, context) :
+                    tapButton;
+            controller.addElement(button,
                     scale(x, height), scale(rowY + (rowHeight - size) / 2, height),
                     scale(size, height), scale(size, height));
             topRight = x - gap;

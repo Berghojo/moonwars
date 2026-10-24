@@ -60,6 +60,7 @@ public class PreferenceConfiguration {
     private static final String FLIP_FACE_BUTTONS_PREF_STRING = "checkbox_flip_face_buttons";
     public static final String TOUCH_CAMERA_DRAG_PREF_STRING = "checkbox_touch_camera_drag";
     private static final String PINCH_SCREEN_ZOOM_PREF_STRING = "checkbox_pinch_screen_zoom";
+    public static final String TAP_RIGHT_CLICK_PREF_STRING = "kbm_tap_right_click";
     public static final String TOUCH_MOUSE_SENSITIVITY_PREF_STRING = "seekbar_touch_mouse_sensitivity";
     private static final String LATENCY_TOAST_PREF_STRING = "checkbox_enable_post_stream_toast";
     private static final String FRAME_PACING_PREF_STRING = "frame_pacing";
@@ -157,6 +158,8 @@ public class PreferenceConfiguration {
     public boolean touchCameraDrag;
     // Two-finger pinch magnifies the stream instead of being sent to the game
     public boolean pinchScreenZoom;
+    // Tapping the stream in camera drag mode right clicks instead of left clicking
+    public boolean tapRightClick;
     public MoonBridge.AudioConfiguration audioConfiguration;
     public int framePacing;
     public boolean absoluteMouseMode;
@@ -608,6 +611,7 @@ public class PreferenceConfiguration {
         config.touchMouseSensitivity = prefs.getInt(TOUCH_MOUSE_SENSITIVITY_PREF_STRING, DEFAULT_TOUCH_MOUSE_SENSITIVITY);
         config.touchCameraDrag = prefs.getBoolean(TOUCH_CAMERA_DRAG_PREF_STRING, DEFAULT_TOUCH_CAMERA_DRAG);
         config.pinchScreenZoom = prefs.getBoolean(PINCH_SCREEN_ZOOM_PREF_STRING, DEFAULT_PINCH_SCREEN_ZOOM);
+        config.tapRightClick = prefs.getBoolean(TAP_RIGHT_CLICK_PREF_STRING, false);
         config.enableLatencyToast = prefs.getBoolean(LATENCY_TOAST_PREF_STRING, DEFAULT_LATENCY_TOAST);
         config.absoluteMouseMode = prefs.getBoolean(ABSOLUTE_MOUSE_MODE_PREF_STRING, DEFAULT_ABSOLUTE_MOUSE_MODE);
         config.enableAudioFx = prefs.getBoolean(ENABLE_AUDIO_FX_PREF_STRING, DEFAULT_ENABLE_AUDIO_FX);

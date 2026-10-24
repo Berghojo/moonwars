@@ -15,7 +15,8 @@ import com.limelight.preferences.PreferenceConfiguration;
  * <ul>
  *   <li>Dragging one finger holds the right mouse button and moves the mouse,
  *       so the camera turns with the finger.</li>
- *   <li>A quick tap moves the cursor to the finger and left clicks there.</li>
+ *   <li>A quick tap moves the cursor to the finger and clicks there, with the left
+ *       button or (when switched on screen) the right button.</li>
  *   <li>Pinching, or dragging two fingers up or down, scrolls the mouse wheel
  *       (zoom).</li>
  * </ul>
@@ -53,15 +54,15 @@ public class CameraDragTouchContext implements TouchContext {
     // Set once a second finger lands; stays set until every finger is lifted
     private boolean zooming;
     private boolean cancelled;
-    // Left button is down for a tap click and waiting for tapReleaseRunnable
-    private boolean tapButtonDown;
+    // Mouse button held down for a tap click and waiting for tapReleaseRunnable, or 0
+    private byte tapButtonDown;
 
     private final Runnable tapReleaseRunnable = new Runnable() {
         @Override
         public void run() {
-            if (tapButtonDown) {
-                tapButtonDown = false;
-                controllerHandler.reportOscMouseButton(MouseButtonPacket.BUTTON_LEFT, false);
+            if (tapButtonDown != 0) {
+                controllerHandler.reportOscMouseButton(tapButtonDown, false);
+                tapButtonDown = 0;
             }
         }
     };
@@ -201,7 +202,7 @@ public class CameraDragTouchContext implements TouchContext {
         }
         else if (!zooming && eventTime - downTime <= TAP_TIME_MS &&
                 Math.hypot(eventX - downX, eventY - downY) < dragSlopPx) {
-            // Quick tap: left click where the finger touched
+            // Quick tap: click where the finger touched
             // Finish any previous click first so double taps are two full clicks
             handler.removeCallbacks(tapReleaseRunnable);
             tapReleaseRunnable.run();
@@ -209,8 +210,8 @@ public class CameraDragTouchContext implements TouchContext {
             int y = Math.max(0, Math.min(downY, targetView.getHeight()));
             conn.sendMousePosition((short) x, (short) y,
                     (short) targetView.getWidth(), (short) targetView.getHeight());
-            tapButtonDown = true;
-            controllerHandler.reportOscMouseButton(MouseButtonPacket.BUTTON_LEFT, true);
+            tapButtonDown = prefConfig.tapRightClick ? MouseButtonPacket.BUTTON_RIGHT : MouseButtonPacket.BUTTON_LEFT;
+            controllerHandler.reportOscMouseButton(tapButtonDown, true);
             handler.postDelayed(tapReleaseRunnable, TAP_CLICK_MS);
         }
     }

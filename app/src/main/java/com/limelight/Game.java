@@ -1574,6 +1574,17 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     @Override
+    public boolean toggleTapRightClick() {
+        prefConfig.tapRightClick = !prefConfig.tapRightClick;
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putBoolean(PreferenceConfiguration.TAP_RIGHT_CLICK_PREF_STRING, prefConfig.tapRightClick)
+                .apply();
+        Toast.makeText(this, prefConfig.tapRightClick ? "Tap: right click" : "Tap: left click",
+                Toast.LENGTH_SHORT).show();
+        return prefConfig.tapRightClick;
+    }
+
+    @Override
     public void showSensitivitySettings() {
         SensitivityDialog.show(this, prefConfig, controllerHandler.getKbmController());
     }

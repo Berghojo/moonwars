@@ -44,7 +44,8 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
 
 **Touching the stream** (anywhere outside the buttons):
 
-* **Tap**: left click exactly where you touched (NPCs, loot, UI, menus).
+* **Tap**: left click exactly where you touched (NPCs, loot, UI, menus). Switch taps to right
+  click with the mouse-icon button in the top bar.
 * **Drag one finger**: holds the right mouse button and turns the camera, like right-click dragging
   in GW2.
 * **Pinch**: magnifies the screen (up to 4×), like GeForce NOW. While zoomed in, move both fingers
@@ -59,7 +60,9 @@ The on-screen controller is enabled by default. Next to the gamepad buttons, it 
   `6-0` slot on top swaps the bar.
 * **Dodge (V), jump (Space)**: directly left of the skill column, dodge at the bottom.
 * **F1 / F2 / F3**: a row along the bottom, left of dodge.
-* **Top bar (right)**: interact (F), mount (E), target (Tab), inventory (I), friend list (Z).
+* **Top bar (right)**: interact (F), mount (E), tap-click toggle, inventory (I), friend list (Z).
+  The tap-click toggle (mouse icon) switches whether tapping the stream left-clicks or
+  right-clicks; the filled half of the icon shows which. The choice is remembered.
 * **Tray** along the top left: keyboard, sensitivity, hide-all (eye), Esc and Map.
   The small arrow tab at its left end folds the tray away to the edge and back. The app remembers
   whether it's folded.
