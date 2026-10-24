@@ -566,7 +566,7 @@ public class VirtualControllerConfigurationLoader {
      *       with the bar swap on top</li>
      *   <li>Dodge, jump and camera zoom in/out stacked left of the skill column,
      *       F1-F3 in a row left of dodge</li>
-     *   <li>Interact, mount, target, inventory and friend list along the top right</li>
+     *   <li>Interact, mount, tap click toggle and inventory along the top right</li>
      *   <li>Keyboard, sensitivity, hide-all, Esc and map in a tray along the top
      *       that folds away to the edge behind a small arrow tab</li>
      * </ul>
@@ -641,8 +641,8 @@ public class VirtualControllerConfigurationLoader {
         }
 
         // Top bar, right to left from the skill column: interact, mount, tap click
-        // toggle, inventory, friend list. Buttons that would run into the tray wrap
-        // to a second row underneath.
+        // toggle, inventory. Buttons that would run into the tray wrap to a second
+        // row underneath.
         float trayEnd = 7 + 4 + 1 + 5 * (9 + 1);
         // Tap click toggle: shows which mouse button a tap on the stream presses
         final DigitalButton tapButton = createActionButton(VirtualControllerElement.EID_TAP_BUTTON, "TAP",
@@ -666,13 +666,12 @@ public class VirtualControllerConfigurationLoader {
 
         // A flag of 0 marks the tap toggle, which isn't a bound button
         int[] topFlags = { ControllerPacket.DOWN_FLAG, KbmBindings.Input.OSC_MOUNT.buttonFlag, 0,
-                KbmBindings.Input.OSC_INVENTORY.buttonFlag, KbmBindings.Input.OSC_FRIENDS.buttonFlag };
+                KbmBindings.Input.OSC_INVENTORY.buttonFlag };
         int[] topIds = { VirtualControllerElement.EID_KBM_DPAD_DOWN, VirtualControllerElement.EID_KBM_MOUNT,
-                VirtualControllerElement.EID_TAP_BUTTON, VirtualControllerElement.EID_KBM_INVENTORY,
-                VirtualControllerElement.EID_KBM_FRIENDS };
+                VirtualControllerElement.EID_TAP_BUTTON, VirtualControllerElement.EID_KBM_INVENTORY };
         // Shown only if a button has no binding
-        String[] topNames = { "USE", "MOUNT", "TAP", "INV", "FRIENDS" };
-        float[] topSizes = { 12, 11, 11, 10, 10 };
+        String[] topNames = { "USE", "MOUNT", "TAP", "INV" };
+        float[] topSizes = { 12, 11, 11, 10 };
         float rowHeight = 12;
         float topRight = columnX - 2;
         float rowY = 2;
